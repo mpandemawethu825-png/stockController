@@ -488,18 +488,18 @@
     <div class="container">
         <div class="glass-card">
             <div class="header">
-                <h1>💎 Perfume Sales Tracker</h1>
+                <h1>Perfume Sales Tracker</h1>
                 <p class="subtitle">Track your wholesale purchases and calculate potential profits</p>
             </div>
             
             <details>
-                <summary>📖 How It Works</summary>
+                <summary>How It Works</summary>
                 <div class="instructions">
-                    <p><strong>📝 Entering Stock:</strong> Fill in the date (required for all items in a session; must be the same date or clear data to start new), product, units, wholesale, and retail prices. Click "Add Item" to add to the table.</p>
-                    <p><strong>📊 Display:</strong> The table updates live with totals, and a summary section shows overall calculations including profit margins.</p>
-                    <p><strong>📥 Download:</strong> Click "Download as CSV" to get a spreadsheet file (opens in Excel/Google Sheets). It includes the date, items, and totals.</p>
-                    <p><strong>📤 Upload:</strong> Select a CSV file (from a previous download) to load data back into the page. It assumes one date per file.</p>
-                    <p><strong>🗑️ Clear:</strong> Resets everything and starts fresh.</p>
+                    <p><strong>Entering Stock:</strong> Fill in the date (required for all items in a session; must be the same date or clear data to start new), product, units, wholesale, and retail prices. Click "Add Item" to add to the table.</p>
+                    <p><strong>Display:</strong> The table updates live with totals, and a summary section shows overall calculations including profit margins.</p>
+                    <p><strong>Download:</strong> Click "Download as CSV" to get a spreadsheet file (opens in Excel/Google Sheets). It includes the date, items, and totals.</p>
+                    <p><strong>Upload:</strong> Select a CSV file (from a previous download) to load data back into the page. It assumes one date per file.</p>
+                    <p><strong>Clear:</strong> Resets everything and starts fresh.</p>
                 </div>
             </details>
             
@@ -507,39 +507,59 @@
                 <form id="salesForm" onsubmit="return false;">
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="date">📅 Date</label>
+                            <label for="date">Date</label>
                             <input type="date" id="date" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="product">🧴 Product Name</label>
-                            <input type="text" id="product" placeholder="White Oud Attar" required>
+                            <label for="product">Product Name</label>
+                            <select id="product" required>
+                                <option value="">Select a product...</option>
+                                <optgroup label="Attars">
+                                    <option value="White Oud Attar">White Oud Attar</option>
+                                    <option value="Arya Attar">Arya Attar</option>
+                                    <option value="Blue Savage Attar">Blue Savage Attar</option>
+                                </optgroup>
+                                <optgroup label="Parfumos 50ml">
+                                    <option value="Black Oud Parfumo 50ml">Black Oud Parfumo 50ml</option>
+                                    <option value="Yalla Parfumo 50ml">Yalla Parfumo 50ml</option>
+                                    <option value="Beauty Parfumo 50ml">Beauty Parfumo 50ml</option>
+                                </optgroup>
+                                <optgroup label="Perfumes">
+                                    <option value="Nomads Land 15ml">Nomads Land 15ml</option>
+                                </optgroup>
+                                <optgroup label="Hand & Body Lotions">
+                                    <option value="Flawless Classic Hand & Body Lotion">Flawless Classic Hand & Body Lotion</option>
+                                    <option value="Black Oud Hand & Body Lotion">Black Oud Hand & Body Lotion</option>
+                                    <option value="Oud and Vanilla Hand & Body Lotion">Oud and Vanilla Hand & Body Lotion</option>
+                                </optgroup>
+                            </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="units">📦 Units</label>
+                            <label for="units">Units</label>
                             <input type="number" id="units" min="1" placeholder="2" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="wholesale">💵 Wholesale (R)</label>
+                            <label for="wholesale">Wholesale (R)</label>
                             <input type="number" id="wholesale" min="0" step="0.01" placeholder="10.00" required>
                         </div>
                         
                         <div class="form-group">
-                            <label for="retail">💰 Retail (R)</label>
+                            <label for="retail">Retail (R)</label>
                             <input type="number" id="retail" min="0" step="0.01" placeholder="35.00" required>
                         </div>
                     </div>
                     
                     <div class="button-group">
-                        <button type="button" class="btn-primary" onclick="addItem()">➕ Add Item</button>
-                        <button type="button" class="btn-secondary" onclick="downloadCSV()">📥 Download CSV</button>
+                        <button type="button" class="btn-primary" onclick="addItem()">Add Item</button>
+                        <button type="button" class="btn-secondary" onclick="downloadCSV()">Download CSV</button>
                         <label for="uploadFile" class="btn-secondary file-upload">
-                            <span>📤 Upload CSV</span>
+                            <span>Upload CSV</span>
                         </label>
                         <input type="file" id="uploadFile" accept=".csv" onchange="uploadCSV()">
-                        <button type="button" class="btn-danger" onclick="clearData()">🗑️ Clear All</button>
+                        <button type="button" class="btn-danger" onclick="clearData()">Clear All</button>
                     </div>
                 </form>
             </div>
@@ -686,7 +706,7 @@
             const margin = totalWholesale > 0 ? ((totalProfit / totalWholesale) * 100).toFixed(1) : 0;
             document.getElementById('summary').innerHTML = `
                 <div class="glass-card summary">
-                    <h2>📊 Summary for ${formatDate(currentDate)}</h2>
+                    <h2>Summary for ${formatDate(currentDate)}</h2>
                     <div class="summary-grid">
                         <div class="summary-item">
                             <div class="summary-label">Total Units</div>
@@ -784,7 +804,7 @@
                 });
                 
                 renderTable();
-                alert('✅ CSV uploaded successfully!');
+                alert('CSV uploaded successfully!');
             };
             reader.readAsText(file);
             document.getElementById('uploadFile').value = '';
