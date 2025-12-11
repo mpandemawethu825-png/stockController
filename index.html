@@ -459,6 +459,10 @@
         }
         
         @media (max-width: 768px) {
+            body {
+                padding: 8px;
+            }
+            
             .glass-card {
                 padding: 20px;
                 border-radius: 20px;
@@ -466,6 +470,7 @@
             
             .form-grid {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
             
             .button-group {
@@ -479,34 +484,150 @@
             }
             
             table {
-                font-size: 0.85em;
+                font-size: 14px;
             }
             
             th, td {
-                padding: 12px 8px;
+                padding: 12px 10px;
+                font-size: 13px;
             }
             
             .summary {
-                padding: 24px;
+                padding: 24px 20px;
             }
             
             .summary-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
             }
+            
+            .summary-item {
+                padding: 16px;
+            }
+            
+            .summary-value {
+                font-size: 1.5em;
+            }
+            
+            h1 {
+                font-size: 1.6em;
+            }
+            
+            .subtitle {
+                font-size: 0.9em;
+            }
+            
+            details {
+                padding: 16px;
+            }
+            
+            .form-section {
+                padding: 20px;
+            }
         }
         
         @media (max-width: 480px) {
             body {
-                padding: 8px;
+                padding: 6px;
             }
             
             .glass-card {
                 padding: 16px;
+                border-radius: 16px;
             }
             
             h1 {
-                font-size: 1.5em;
+                font-size: 1.4em;
+            }
+            
+            .subtitle {
+                font-size: 0.85em;
+            }
+            
+            .form-section {
+                padding: 16px;
+            }
+            
+            input, select, button, .file-upload {
+                font-size: 15px;
+            }
+            
+            .button-group {
+                gap: 10px;
+            }
+            
+            details {
+                padding: 14px;
+            }
+            
+            .instructions {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 12px;
+            }
+            
+            .delete-btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+            
+            .summary {
+                padding: 20px 16px;
+            }
+            
+            .summary h2 {
+                font-size: 1.2em;
+            }
+            
+            .summary-item {
+                padding: 14px;
+            }
+            
+            .summary-label {
+                font-size: 0.8em;
+            }
+            
+            .summary-value {
+                font-size: 1.4em;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .glass-card {
+                padding: 12px;
+            }
+            
+            h1 {
+                font-size: 1.3em;
+            }
+            
+            .form-section {
+                padding: 12px;
+            }
+            
+            input, select, button, .file-upload {
+                padding: 14px 16px;
+                font-size: 14px;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+                font-size: 11px;
+            }
+        }
+        
+        /* iOS specific fixes */
+        @supports (-webkit-touch-callout: none) {
+            input, select, button, .file-upload {
+                -webkit-appearance: none;
+                border-radius: 12px;
+            }
+            
+            select {
+                background-size: 12px;
             }
         }
     </style>
@@ -582,6 +703,8 @@
                     <div class="button-group">
                         <button type="button" class="btn-primary" onclick="addItem()">Add Item</button>
                         <button type="button" class="btn-secondary" onclick="downloadCSV()">Download CSV</button>
+                        <button type="button" class="btn-secondary" onclick="downloadInfographic('jpg')">Download JPG</button>
+                        <button type="button" class="btn-secondary" onclick="downloadInfographic('pdf')">Download PDF</button>
                         <label for="uploadFile" class="btn-secondary file-upload">
                             <span>Upload CSV</span>
                         </label>
@@ -621,8 +744,13 @@
         </div>
         
         <div id="summary"></div>
+        
+        <!-- Hidden canvas for infographic generation -->
+        <canvas id="infographicCanvas" style="display: none;"></canvas>
     </div>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         let items = [];
         let currentDate = '';
@@ -845,6 +973,194 @@
                 renderTable();
                 document.getElementById('date').valueAsDate = new Date();
             }
+        }
+
+        function downloadInfographic(format) {
+            if (items.length === 0) {
+                alert('No data to download. Please add items first.');
+                return;
+            }
+
+            // Create infographic content
+            const canvas = document.getElementById('infographicCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = 1200;
+            canvas.height = 1600;
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(0.5, '#764ba2');
+            gradient.addColorStop(1, '#f093fb');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Calculate totals
+            const totalUnits = items.reduce((sum, item) => sum + item.units, 0);
+            const totalWholesale = items.reduce((sum, item) => sum + (item.units * item.wholesale), 0);
+            const totalRetail = items.reduce((sum, item) => sum + (item.units * item.retail), 0);
+            const totalProfit = totalRetail - totalWholesale;
+            const margin = totalWholesale > 0 ? ((totalProfit / totalWholesale) * 100).toFixed(1) : 0;
+            
+            // White container
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+            roundRect(ctx, 50, 50, canvas.width - 100, canvas.height - 100, 30);
+            ctx.fill();
+            
+            // Title
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Perfume Sales Report', canvas.width / 2, 150);
+            
+            // Date
+            ctx.fillStyle = '#5f6368';
+            ctx.font = '32px Arial';
+            ctx.fillText(formatDate(currentDate), canvas.width / 2, 210);
+            
+            // Summary boxes
+            const boxY = 280;
+            const boxHeight = 180;
+            const boxWidth = 210;
+            const spacing = 30;
+            const startX = (canvas.width - (boxWidth * 5 + spacing * 4)) / 2;
+            
+            const summaryData = [
+                { label: 'Total Units', value: totalUnits.toString(), color: '#4285f4' },
+                { label: 'Wholesale', value: `R${totalWholesale.toFixed(2)}`, color: '#ea4335' },
+                { label: 'Retail Value', value: `R${totalRetail.toFixed(2)}`, color: '#fbbc04' },
+                { label: 'Profit', value: `R${totalProfit.toFixed(2)}`, color: '#34a853' },
+                { label: 'Margin', value: `${margin}%`, color: '#764ba2' }
+            ];
+            
+            summaryData.forEach((data, index) => {
+                const x = startX + (boxWidth + spacing) * index;
+                
+                // Box background
+                ctx.fillStyle = data.color;
+                ctx.globalAlpha = 0.1;
+                roundRect(ctx, x, boxY, boxWidth, boxHeight, 15);
+                ctx.fill();
+                ctx.globalAlpha = 1;
+                
+                // Border
+                ctx.strokeStyle = data.color;
+                ctx.lineWidth = 3;
+                roundRect(ctx, x, boxY, boxWidth, boxHeight, 15);
+                ctx.stroke();
+                
+                // Label
+                ctx.fillStyle = '#5f6368';
+                ctx.font = '18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(data.label, x + boxWidth / 2, boxY + 50);
+                
+                // Value
+                ctx.fillStyle = data.color;
+                ctx.font = 'bold 32px Arial';
+                const fontSize = data.value.length > 10 ? 24 : 32;
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.fillText(data.value, x + boxWidth / 2, boxY + 110);
+            });
+            
+            // Items table
+            const tableY = 520;
+            ctx.fillStyle = '#202124';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText('Purchase Details', 100, tableY);
+            
+            // Table header
+            const headerY = tableY + 50;
+            ctx.fillStyle = '#4285f4';
+            ctx.globalAlpha = 0.1;
+            ctx.fillRect(100, headerY, canvas.width - 200, 50);
+            ctx.globalAlpha = 1;
+            
+            ctx.fillStyle = '#4285f4';
+            ctx.font = 'bold 20px Arial';
+            ctx.fillText('Product', 120, headerY + 32);
+            ctx.fillText('Units', 520, headerY + 32);
+            ctx.fillText('Wholesale', 640, headerY + 32);
+            ctx.fillText('Retail', 820, headerY + 32);
+            ctx.fillText('Profit', 980, headerY + 32);
+            
+            // Table rows
+            let rowY = headerY + 70;
+            ctx.font = '18px Arial';
+            ctx.fillStyle = '#202124';
+            
+            items.slice(0, 12).forEach((item, index) => {
+                if (rowY > canvas.height - 200) return;
+                
+                const profit = (item.units * item.retail) - (item.units * item.wholesale);
+                
+                // Alternating row background
+                if (index % 2 === 0) {
+                    ctx.fillStyle = '#f8f9fa';
+                    ctx.fillRect(100, rowY - 25, canvas.width - 200, 45);
+                }
+                
+                ctx.fillStyle = '#202124';
+                const productName = item.product.length > 30 ? item.product.substring(0, 27) + '...' : item.product;
+                ctx.fillText(productName, 120, rowY);
+                ctx.fillText(item.units.toString(), 520, rowY);
+                ctx.fillText(`R${item.wholesale.toFixed(2)}`, 640, rowY);
+                ctx.fillText(`R${item.retail.toFixed(2)}`, 820, rowY);
+                ctx.fillStyle = '#34a853';
+                ctx.fillText(`R${profit.toFixed(2)}`, 980, rowY);
+                
+                rowY += 45;
+            });
+            
+            if (items.length > 12) {
+                ctx.fillStyle = '#5f6368';
+                ctx.font = 'italic 18px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`... and ${items.length - 12} more items`, canvas.width / 2, rowY + 20);
+            }
+            
+            // Footer
+            ctx.fillStyle = '#5f6368';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Generated by Perfume Sales Tracker', canvas.width / 2, canvas.height - 80);
+            
+            // Download based on format
+            if (format === 'jpg') {
+                canvas.toBlob(function(blob) {
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = `perfume_sales_${currentDate}.jpg`;
+                    link.click();
+                }, 'image/jpeg', 0.95);
+            } else if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new jsPDF({
+                    orientation: 'portrait',
+                    unit: 'px',
+                    format: [canvas.width, canvas.height]
+                });
+                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+                pdf.save(`perfume_sales_${currentDate}.pdf`);
+            }
+        }
+        
+        function roundRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
         }
     </script>
 </body>
