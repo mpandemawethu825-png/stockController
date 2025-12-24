@@ -3,1165 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#667eea">
-    <title>Perfume Sales Tracker</title>
+    <title>Sisonke Perfume Tracker</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --google-blue: #1A73E8; --google-red: #D93025; --google-green: #1E8E3E;
+            --bg-light: #F8F9FA; --text-main: #202124; --border: #DADCE0;
         }
+
+        body { font-family: 'Roboto', sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 12px; }
+        .container { max-width: 600px; margin: 0 auto; }
+
+        .header { text-align: center; padding: 20px 0; }
+        .header h1 { font-size: 20px; font-weight: 500; color: var(--text-main); margin: 0; }
+
+        /* Dashboard */
+        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+        .dash-item { background: white; padding: 15px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+        .dash-item label { font-size: 10px; text-transform: uppercase; color: #5F6368; display: block; }
+        .dash-item strong { font-size: 16px; display: block; margin-top: 4px; }
+
+        .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); }
+        .card h2 { font-size: 14px; margin-bottom: 12px; color: var(--google-blue); border-bottom: 1px solid #eee; padding-bottom: 8px; }
+
+        .lock { opacity: 0.3; pointer-events: none; }
+        .unlocked { opacity: 1; pointer-events: all; }
+
+        .upload-area { border: 2px dashed var(--google-blue); padding: 20px; text-align: center; border-radius: 8px; background: #E8F0FE; cursor: pointer; }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-            min-height: 100vh;
-            padding: 10px;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            touch-action: manipulation;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        label { font-size: 12px; font-weight: 500; color: #3C4043; display: block; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+
+        .btn { width: 100%; padding: 12px; border-radius: 4px; border: none; font-weight: 500; cursor: pointer; margin-top: 8px; font-size: 14px; }
+        .btn-blue { background: var(--google-blue); color: white; }
+        .btn-green { background: var(--google-green); color: white; }
+        .btn-whatsapp { background: #25D366; color: white; font-weight: 700; }
         
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(66, 133, 244, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(234, 67, 53, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(251, 188, 5, 0.15) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 32px;
-            margin-bottom: 20px;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-        
-        h1 {
-            background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: clamp(1.8em, 5vw, 2.5em);
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-        
-        .subtitle {
-            color: #5f6368;
-            font-size: clamp(0.9em, 2.5vw, 1em);
-            font-weight: 400;
-        }
-        
-        details {
-            background: rgba(66, 133, 244, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(66, 133, 244, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        details[open] {
-            background: rgba(66, 133, 244, 0.08);
-        }
-        
-        summary {
-            cursor: pointer;
-            font-weight: 600;
-            color: #4285f4;
-            font-size: 1em;
-            user-select: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        summary:hover {
-            color: #1967d2;
-        }
-        
-        .instructions {
-            padding-top: 16px;
-            color: #5f6368;
-            line-height: 1.7;
-            font-size: 0.95em;
-        }
-        
-        .instructions p {
-            margin-bottom: 12px;
-            padding-left: 4px;
-        }
-        
-        .instructions strong {
-            color: #202124;
-            font-weight: 600;
-        }
-        
-        .form-section {
-            background: rgba(251, 188, 5, 0.03);
-            backdrop-filter: blur(10px);
-            padding: 24px;
-            border-radius: 20px;
-            margin-bottom: 24px;
-            border: 1px solid rgba(251, 188, 5, 0.1);
-        }
-        
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        
-        label {
-            font-weight: 600;
-            color: #202124;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            letter-spacing: 0.2px;
-        }
-        
-        input, select {
-            padding: 16px;
-            border: 2px solid rgba(0, 0, 0, 0.06);
-            border-radius: 12px;
-            font-size: 16px;
-            background: white;
-            transition: all 0.2s ease;
-            font-family: inherit;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 100%;
-        }
-        
-        select {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            padding-right: 40px;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #4285f4;
-            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.1);
-            transform: translateY(-1px);
-        }
-        
-        input:hover, select:hover {
-            border-color: rgba(0, 0, 0, 0.12);
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        button, .file-upload {
-            padding: 16px 24px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: inherit;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            position: relative;
-            overflow: hidden;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            min-height: 48px;
-        }
-        
-        button::before, .file-upload::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-        
-        button:hover::before, .file-upload:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #4285f4, #1967d2);
-            color: white;
-            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #34a853, #0f9d58);
-            color: white;
-            box-shadow: 0 4px 12px rgba(52, 168, 83, 0.3);
-        }
-        
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(52, 168, 83, 0.4);
-        }
-        
-        .btn-danger {
-            background: linear-gradient(135deg, #ea4335, #c5221f);
-            color: white;
-            box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
-        }
-        
-        .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(234, 67, 53, 0.4);
-        }
-        
-        #uploadFile {
-            display: none;
-        }
-        
-        .table-container {
-            overflow-x: auto;
-            border-radius: 20px;
-            background: white;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            min-width: 600px;
-        }
-        
-        thead {
-            background: linear-gradient(135deg, #4285f4, #1967d2);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        th {
-            padding: 18px 16px;
-            text-align: left;
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.8em;
-            letter-spacing: 0.8px;
-            white-space: nowrap;
-        }
-        
-        td {
-            padding: 16px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-            color: #202124;
-            font-size: 0.95em;
-        }
-        
-        tbody tr {
-            transition: all 0.2s ease;
-        }
-        
-        tbody tr:hover {
-            background: rgba(66, 133, 244, 0.02);
-            transform: scale(1.005);
-        }
-        
-        .total-row {
-            background: linear-gradient(135deg, rgba(251, 188, 5, 0.1), rgba(251, 188, 5, 0.05));
-            font-weight: 700;
-            color: #202124;
-            border-top: 3px solid #fbbc04;
-        }
-        
-        .total-row td {
-            padding: 20px 16px;
-            font-size: 1.05em;
-        }
-        
-        .delete-btn {
-            background: linear-gradient(135deg, #ea4335, #c5221f);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(234, 67, 53, 0.2);
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
-            min-height: 40px;
-            white-space: nowrap;
-        }
-        
-        .delete-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3);
-        }
-        
-        .summary {
-            background: linear-gradient(135deg, rgba(66, 133, 244, 0.95), rgba(52, 168, 83, 0.95));
-            backdrop-filter: blur(20px);
-            color: white;
-            border-radius: 24px;
-            padding: 32px;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            animation: fadeInUp 0.6s ease-out 0.2s both;
-        }
-        
-        .summary h2 {
-            margin-bottom: 24px;
-            font-size: clamp(1.3em, 4vw, 1.6em);
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-        }
-        
-        .summary-item {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .summary-item:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-        }
-        
-        .summary-label {
-            font-size: 0.85em;
-            opacity: 0.9;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 500;
-        }
-        
-        .summary-value {
-            font-size: clamp(1.5em, 4vw, 2em);
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 80px 20px;
-            color: #5f6368;
-        }
-        
-        .empty-state-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
-            opacity: 0.3;
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .empty-state h3 {
-            color: #202124;
-            margin-bottom: 8px;
-            font-size: 1.3em;
-        }
-        
-        .empty-state p {
-            color: #5f6368;
-            font-size: 0.95em;
-        }
-        
-        .profit-positive {
-            color: #34a853;
-            font-weight: 700;
-        }
-        
-        @media (max-width: 768px) {
-            body {
-                padding: 8px;
-            }
-            
-            .glass-card {
-                padding: 20px;
-                border-radius: 20px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            .button-group button,
-            .button-group .file-upload {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            table {
-                font-size: 14px;
-            }
-            
-            th, td {
-                padding: 12px 10px;
-                font-size: 13px;
-            }
-            
-            .summary {
-                padding: 24px 20px;
-            }
-            
-            .summary-grid {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-            
-            .summary-item {
-                padding: 16px;
-            }
-            
-            .summary-value {
-                font-size: 1.5em;
-            }
-            
-            h1 {
-                font-size: 1.6em;
-            }
-            
-            .subtitle {
-                font-size: 0.9em;
-            }
-            
-            details {
-                padding: 16px;
-            }
-            
-            .form-section {
-                padding: 20px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            body {
-                padding: 6px;
-            }
-            
-            .glass-card {
-                padding: 16px;
-                border-radius: 16px;
-            }
-            
-            h1 {
-                font-size: 1.4em;
-            }
-            
-            .subtitle {
-                font-size: 0.85em;
-            }
-            
-            .form-section {
-                padding: 16px;
-            }
-            
-            input, select, button, .file-upload {
-                font-size: 15px;
-            }
-            
-            .button-group {
-                gap: 10px;
-            }
-            
-            details {
-                padding: 14px;
-            }
-            
-            .instructions {
-                font-size: 0.9em;
-            }
-            
-            th, td {
-                padding: 10px 8px;
-                font-size: 12px;
-            }
-            
-            .delete-btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-            
-            .summary {
-                padding: 20px 16px;
-            }
-            
-            .summary h2 {
-                font-size: 1.2em;
-            }
-            
-            .summary-item {
-                padding: 14px;
-            }
-            
-            .summary-label {
-                font-size: 0.8em;
-            }
-            
-            .summary-value {
-                font-size: 1.4em;
-            }
-        }
-        
-        @media (max-width: 360px) {
-            .glass-card {
-                padding: 12px;
-            }
-            
-            h1 {
-                font-size: 1.3em;
-            }
-            
-            .form-section {
-                padding: 12px;
-            }
-            
-            input, select, button, .file-upload {
-                padding: 14px 16px;
-                font-size: 14px;
-            }
-            
-            th, td {
-                padding: 8px 6px;
-                font-size: 11px;
-            }
-        }
-        
-        /* iOS specific fixes */
-        @supports (-webkit-touch-callout: none) {
-            input, select, button, .file-upload {
-                -webkit-appearance: none;
-                border-radius: 12px;
-            }
-            
-            select {
-                background-size: 12px;
-            }
-        }
+        .type-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; color: white; text-transform: uppercase; margin-right: 5px; }
+        .tag-stock { background: var(--google-red); }
+        .tag-sale { background: var(--google-green); }
+
+        .history { font-size: 12px; max-height: 200px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="glass-card">
-            <div class="header">
-                <h1>Perfume Sales Tracker</h1>
-                <p class="subtitle">Track your wholesale purchases and calculate potential profits</p>
-            </div>
-            
-            <details>
-                <summary>How It Works</summary>
-                <div class="instructions">
-                    <p><strong>Entering Stock:</strong> Fill in the date (required for all items in a session; must be the same date or clear data to start new), product, units, wholesale, and retail prices. Click "Add Item" to add to the table.</p>
-                    <p><strong>Display:</strong> The table updates live with totals, and a summary section shows overall calculations including profit margins.</p>
-                    <p><strong>Download:</strong> Click "Download as CSV" to get a spreadsheet file (opens in Excel/Google Sheets). It includes the date, items, and totals.</p>
-                    <p><strong>Upload:</strong> Select a CSV file (from a previous download) to load data back into the page. It assumes one date per file.</p>
-                    <p><strong>Clear:</strong> Resets everything and starts fresh.</p>
-                </div>
-            </details>
-            
-            <div class="form-section">
-                <form id="salesForm" onsubmit="return false;">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="date">Date</label>
-                            <input type="date" id="date" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="product">Product Name</label>
-                            <select id="product" required>
-                                <option value="">Select a product...</option>
-                                <optgroup label="Attars">
-                                    <option value="White Oud Attar">White Oud Attar</option>
-                                    <option value="Arya Attar">Arya Attar</option>
-                                    <option value="Blue Savage Attar">Blue Savage Attar</option>
-                                </optgroup>
-                                <optgroup label="Parfumos 50ml">
-                                    <option value="Black Oud Parfumo 50ml">Black Oud Parfumo 50ml</option>
-                                    <option value="Yalla Parfumo 50ml">Yalla Parfumo 50ml</option>
-                                    <option value="Beauty Parfumo 50ml">Beauty Parfumo 50ml</option>
-                                </optgroup>
-                                <optgroup label="Perfumes">
-                                    <option value="Nomads Land 15ml">Nomads Land 15ml</option>
-                                </optgroup>
-                                <optgroup label="Hand & Body Lotions">
-                                    <option value="Flawless Classic Hand & Body Lotion">Flawless Classic Hand & Body Lotion</option>
-                                    <option value="Black Oud Hand & Body Lotion">Black Oud Hand & Body Lotion</option>
-                                    <option value="Oud and Vanilla Hand & Body Lotion">Oud and Vanilla Hand & Body Lotion</option>
-                                </optgroup>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="units">Units</label>
-                            <input type="number" id="units" min="1" placeholder="2" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="wholesale">Wholesale (R)</label>
-                            <input type="number" id="wholesale" min="0" step="0.01" placeholder="10.00" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="retail">Retail (R)</label>
-                            <input type="number" id="retail" min="0" step="0.01" placeholder="35.00" required>
-                        </div>
-                    </div>
-                    
-                    <div class="button-group">
-                        <button type="button" class="btn-primary" onclick="addItem()">Add Item</button>
-                        <button type="button" class="btn-secondary" onclick="downloadCSV()">Download CSV</button>
-                        <button type="button" class="btn-secondary" onclick="downloadInfographic('jpg')">Download JPG</button>
-                        <button type="button" class="btn-secondary" onclick="downloadInfographic('pdf')">Download PDF</button>
-                        <label for="uploadFile" class="btn-secondary file-upload">
-                            <span>Upload CSV</span>
-                        </label>
-                        <input type="file" id="uploadFile" accept=".csv" onchange="uploadCSV()">
-                        <button type="button" class="btn-danger" onclick="clearData()">Clear All</button>
-                    </div>
-                </form>
-            </div>
-            
-            <div class="table-container">
-                <table id="salesTable">
-                    <thead>
-                        <tr>
-                            <th>Product</th>
-                            <th>Units</th>
-                            <th>Wholesale</th>
-                            <th>Total Wholesale</th>
-                            <th>Retail</th>
-                            <th>Total Retail</th>
-                            <th>Profit</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr>
-                            <td colspan="8" class="empty-state">
-                                <svg class="empty-state-icon" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                                </svg>
-                                <h3>No sales recorded yet</h3>
-                                <p>Add your first item to get started</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div id="summary"></div>
-        
-        <!-- Hidden canvas for infographic generation -->
-        <canvas id="infographicCanvas" style="display: none;"></canvas>
+
+<div class="container">
+    <div class="header">
+        <h1>Sisonke Daily & Weekly Tracker</h1>
     </div>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script>
-        let items = [];
-        let currentDate = '';
 
-        // Set today's date by default
-        document.getElementById('date').valueAsDate = new Date();
+    <div class="dashboard">
+        <div class="dash-item">
+            <label>Weekly Stock Cost</label>
+            <strong id="dashStock" style="color: var(--google-red);">R0.00</strong>
+        </div>
+        <div class="dash-item">
+            <label>Daily Sales Revenue</label>
+            <strong id="dashSales" style="color: var(--google-green);">R0.00</strong>
+        </div>
+        <div class="dash-item" style="grid-column: span 2;">
+            <label>Net Profit (This Week)</label>
+            <strong id="dashProfit">R0.00</strong>
+        </div>
+    </div>
 
-        function addItem() {
-            const date = document.getElementById('date').value;
-            const product = document.getElementById('product').value.trim();
-            const units = parseInt(document.getElementById('units').value);
-            const wholesale = parseFloat(document.getElementById('wholesale').value);
-            const retail = parseFloat(document.getElementById('retail').value);
-            
-            if (!date || !product || isNaN(units) || isNaN(wholesale) || isNaN(retail)) {
-                alert('Please fill all fields correctly.');
-                return;
-            }
-            
-            if (currentDate && currentDate !== date) {
-                if (!confirm('This is a different date from your current entries. Continue?')) {
-                    return;
-                }
-            }
-            
-            currentDate = date;
-            
-            items.push({ product, units, wholesale, retail });
-            renderTable();
-            clearForm();
-        }
+    <div class="card">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+            <div id="statusText"><strong>Link Spreadsheet</strong></div>
+            <input type="file" id="fileInput" accept=".xlsx" style="display:none" onchange="handleFile(this)">
+        </div>
+    </div>
 
-        function deleteItem(index) {
-            if (confirm('Delete this item?')) {
-                items.splice(index, 1);
-                if (items.length === 0) {
-                    currentDate = '';
-                }
-                renderTable();
-            }
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            if (items.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="empty-state">
-                            <svg class="empty-state-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
-                            </svg>
-                            <h3>No sales recorded yet</h3>
-                            <p>Add your first item to get started</p>
-                        </td>
-                    </tr>
-                `;
-                document.getElementById('summary').innerHTML = '';
-                return;
-            }
-            
-            let totalUnits = 0;
-            let totalWholesale = 0;
-            let totalRetail = 0;
-            let totalProfit = 0;
-            
-            items.forEach((item, index) => {
-                const row = document.createElement('tr');
-                const totalWS = item.units * item.wholesale;
-                const totalRT = item.units * item.retail;
-                const profit = totalRT - totalWS;
-                
-                row.innerHTML = `
-                    <td><strong>${item.product}</strong></td>
-                    <td>${item.units}</td>
-                    <td>R${item.wholesale.toFixed(2)}</td>
-                    <td>R${totalWS.toFixed(2)}</td>
-                    <td>R${item.retail.toFixed(2)}</td>
-                    <td>R${totalRT.toFixed(2)}</td>
-                    <td class="profit-positive">R${profit.toFixed(2)}</td>
-                    <td><button class="delete-btn" onclick="deleteItem(${index})">Delete</button></td>
-                `;
-                tbody.appendChild(row);
-                
-                totalUnits += item.units;
-                totalWholesale += totalWS;
-                totalRetail += totalRT;
-                totalProfit += profit;
-            });
-            
-            // Add total row
-            const totalRow = document.createElement('tr');
-            totalRow.classList.add('total-row');
-            totalRow.innerHTML = `
-                <td><strong>TOTALS</strong></td>
-                <td><strong>${totalUnits}</strong></td>
-                <td></td>
-                <td><strong>R${totalWholesale.toFixed(2)}</strong></td>
-                <td></td>
-                <td><strong>R${totalRetail.toFixed(2)}</strong></td>
-                <td class="profit-positive"><strong>R${totalProfit.toFixed(2)}</strong></td>
-                <td></td>
-            `;
-            tbody.appendChild(totalRow);
-            
-            // Summary
-            const margin = totalWholesale > 0 ? ((totalProfit / totalWholesale) * 100).toFixed(1) : 0;
-            document.getElementById('summary').innerHTML = `
-                <div class="glass-card summary">
-                    <h2>Summary for ${formatDate(currentDate)}</h2>
-                    <div class="summary-grid">
-                        <div class="summary-item">
-                            <div class="summary-label">Total Units</div>
-                            <div class="summary-value">${totalUnits}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">Wholesale Cost</div>
-                            <div class="summary-value">R${totalWholesale.toFixed(2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">Retail Value</div>
-                            <div class="summary-value">R${totalRetail.toFixed(2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">Potential Profit</div>
-                            <div class="summary-value">R${totalProfit.toFixed(2)}</div>
-                        </div>
-                        <div class="summary-item">
-                            <div class="summary-label">Profit Margin</div>
-                            <div class="summary-value">${margin}%</div>
-                        </div>
-                    </div>
+    <div id="mainUI" class="lock">
+        <div class="card">
+            <h2>Add Weekly Stock Purchase</h2>
+            <div class="form-row">
+                <div>
+                    <label>Product Purchased</label>
+                    <select id="stProduct">
+                        <option value="White Oud Attar">White Oud Attar</option>
+                        <option value="Nomads Land 15ml">Nomads Land 15ml</option>
+                        <option value="Arya Attar">Arya Attar</option>
+                    </select>
                 </div>
-            `;
-        }
+                <div>
+                    <label>Qty Bought</label>
+                    <input type="number" id="stQty" placeholder="0">
+                </div>
+            </div>
+            <label>Total Wholesale Cost (R)</label>
+            <input type="number" id="stCost" placeholder="0.00">
+            <button class="btn btn-blue" onclick="syncStock()">Record Stock Inflow</button>
+        </div>
 
-        function formatDate(dateStr) {
-            const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' });
-        }
+        <div class="card">
+            <h2>Add Daily Sale</h2>
+            <div class="form-row">
+                <div>
+                    <label>Product Sold</label>
+                    <select id="saProduct">
+                        <option value="White Oud Attar">White Oud Attar</option>
+                        <option value="Nomads Land 15ml">Nomads Land 15ml</option>
+                        <option value="Arya Attar">Arya Attar</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Qty Sold</label>
+                    <input type="number" id="saQty" placeholder="0">
+                </div>
+            </div>
+            <label>Total Sale Amount (R)</label>
+            <input type="number" id="saTotal" placeholder="0.00">
+            <button class="btn btn-green" onclick="syncSale()">Record Daily Sale</button>
+        </div>
 
-        function clearForm() {
-            document.getElementById('product').value = '';
-            document.getElementById('units').value = '';
-            document.getElementById('wholesale').value = '';
-            document.getElementById('retail').value = '';
-            document.getElementById('product').focus();
-        }
-
-        function downloadCSV() {
-            if (items.length === 0) {
-                alert('No data to download.');
-                return;
-            }
-            
-            let csv = 'Date,Product,Units,Wholesale Price,Total Wholesale,Retail Price,Total Retail,Profit\n';
-            items.forEach(item => {
-                const totalWS = item.units * item.wholesale;
-                const totalRT = item.units * item.retail;
-                const profit = totalRT - totalWS;
-                csv += `${currentDate},"${item.product}",${item.units},${item.wholesale},${totalWS},${item.retail},${totalRT},${profit}\n`;
-            });
-            
-            // Add totals
-            const totalUnits = items.reduce((sum, item) => sum + item.units, 0);
-            const totalWholesale = items.reduce((sum, item) => sum + (item.units * item.wholesale), 0);
-            const totalRetail = items.reduce((sum, item) => sum + (item.units * item.retail), 0);
-            const totalProfit = totalRetail - totalWholesale;
-            csv += `TOTALS,,${totalUnits},,${totalWholesale},,${totalRetail},${totalProfit}\n`;
-            
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `perfume_sales_${currentDate}.csv`;
-            link.click();
-        }
-
-        function uploadCSV() {
-            const file = document.getElementById('uploadFile').files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n');
-                
-                items = [];
-                currentDate = '';
-                
-                lines.forEach((line, index) => {
-                    if (index === 0 || line.trim() === '') return;
-                    const parts = line.split(',');
-                    if (parts[0] === 'TOTALS') return;
-                    
-                    const date = parts[0];
-                    const product = parts[1].replace(/"/g, '');
-                    const units = parseInt(parts[2]);
-                    const wholesale = parseFloat(parts[3]);
-                    const retail = parseFloat(parts[5]);
-                    
-                    if (date && product && !isNaN(units) && !isNaN(wholesale) && !isNaN(retail)) {
-                        currentDate = date;
-                        items.push({ product, units, wholesale, retail });
-                    }
-                });
-                
-                renderTable();
-                alert('CSV uploaded successfully!');
-            };
-            reader.readAsText(file);
-            document.getElementById('uploadFile').value = '';
-        }
-
-        function clearData() {
-            if (items.length === 0) return;
-            if (confirm('Are you sure you want to clear all data?')) {
-                items = [];
-                currentDate = '';
-                renderTable();
-                document.getElementById('date').valueAsDate = new Date();
-            }
-        }
-
-        function downloadInfographic(format) {
-            if (items.length === 0) {
-                alert('No data to download. Please add items first.');
-                return;
-            }
-
-            // Create infographic content
-            const canvas = document.getElementById('infographicCanvas');
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas size
-            canvas.width = 1200;
-            canvas.height = 1600;
-            
-            // Background gradient
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#667eea');
-            gradient.addColorStop(0.5, '#764ba2');
-            gradient.addColorStop(1, '#f093fb');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Calculate totals
-            const totalUnits = items.reduce((sum, item) => sum + item.units, 0);
-            const totalWholesale = items.reduce((sum, item) => sum + (item.units * item.wholesale), 0);
-            const totalRetail = items.reduce((sum, item) => sum + (item.units * item.retail), 0);
-            const totalProfit = totalRetail - totalWholesale;
-            const margin = totalWholesale > 0 ? ((totalProfit / totalWholesale) * 100).toFixed(1) : 0;
-            
-            // White container
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-            roundRect(ctx, 50, 50, canvas.width - 100, canvas.height - 100, 30);
-            ctx.fill();
-            
-            // Title
-            ctx.fillStyle = '#667eea';
-            ctx.font = 'bold 60px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Perfume Sales Report', canvas.width / 2, 150);
-            
-            // Date
-            ctx.fillStyle = '#5f6368';
-            ctx.font = '32px Arial';
-            ctx.fillText(formatDate(currentDate), canvas.width / 2, 210);
-            
-            // Summary boxes
-            const boxY = 280;
-            const boxHeight = 180;
-            const boxWidth = 210;
-            const spacing = 30;
-            const startX = (canvas.width - (boxWidth * 5 + spacing * 4)) / 2;
-            
-            const summaryData = [
-                { label: 'Total Units', value: totalUnits.toString(), color: '#4285f4' },
-                { label: 'Wholesale', value: `R${totalWholesale.toFixed(2)}`, color: '#ea4335' },
-                { label: 'Retail Value', value: `R${totalRetail.toFixed(2)}`, color: '#fbbc04' },
-                { label: 'Profit', value: `R${totalProfit.toFixed(2)}`, color: '#34a853' },
-                { label: 'Margin', value: `${margin}%`, color: '#764ba2' }
-            ];
-            
-            summaryData.forEach((data, index) => {
-                const x = startX + (boxWidth + spacing) * index;
-                
-                // Box background
-                ctx.fillStyle = data.color;
-                ctx.globalAlpha = 0.1;
-                roundRect(ctx, x, boxY, boxWidth, boxHeight, 15);
-                ctx.fill();
-                ctx.globalAlpha = 1;
-                
-                // Border
-                ctx.strokeStyle = data.color;
-                ctx.lineWidth = 3;
-                roundRect(ctx, x, boxY, boxWidth, boxHeight, 15);
-                ctx.stroke();
-                
-                // Label
-                ctx.fillStyle = '#5f6368';
-                ctx.font = '18px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(data.label, x + boxWidth / 2, boxY + 50);
-                
-                // Value
-                ctx.fillStyle = data.color;
-                ctx.font = 'bold 32px Arial';
-                const fontSize = data.value.length > 10 ? 24 : 32;
-                ctx.font = `bold ${fontSize}px Arial`;
-                ctx.fillText(data.value, x + boxWidth / 2, boxY + 110);
-            });
-            
-            // Items table
-            const tableY = 520;
-            ctx.fillStyle = '#202124';
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'left';
-            ctx.fillText('Purchase Details', 100, tableY);
-            
-            // Table header
-            const headerY = tableY + 50;
-            ctx.fillStyle = '#4285f4';
-            ctx.globalAlpha = 0.1;
-            ctx.fillRect(100, headerY, canvas.width - 200, 50);
-            ctx.globalAlpha = 1;
-            
-            ctx.fillStyle = '#4285f4';
-            ctx.font = 'bold 20px Arial';
-            ctx.fillText('Product', 120, headerY + 32);
-            ctx.fillText('Units', 520, headerY + 32);
-            ctx.fillText('Wholesale', 640, headerY + 32);
-            ctx.fillText('Retail', 820, headerY + 32);
-            ctx.fillText('Profit', 980, headerY + 32);
-            
-            // Table rows
-            let rowY = headerY + 70;
-            ctx.font = '18px Arial';
-            ctx.fillStyle = '#202124';
-            
-            items.slice(0, 12).forEach((item, index) => {
-                if (rowY > canvas.height - 200) return;
-                
-                const profit = (item.units * item.retail) - (item.units * item.wholesale);
-                
-                // Alternating row background
-                if (index % 2 === 0) {
-                    ctx.fillStyle = '#f8f9fa';
-                    ctx.fillRect(100, rowY - 25, canvas.width - 200, 45);
-                }
-                
-                ctx.fillStyle = '#202124';
-                const productName = item.product.length > 30 ? item.product.substring(0, 27) + '...' : item.product;
-                ctx.fillText(productName, 120, rowY);
-                ctx.fillText(item.units.toString(), 520, rowY);
-                ctx.fillText(`R${item.wholesale.toFixed(2)}`, 640, rowY);
-                ctx.fillText(`R${item.retail.toFixed(2)}`, 820, rowY);
-                ctx.fillStyle = '#34a853';
-                ctx.fillText(`R${profit.toFixed(2)}`, 980, rowY);
-                
-                rowY += 45;
-            });
-            
-            if (items.length > 12) {
-                ctx.fillStyle = '#5f6368';
-                ctx.font = 'italic 18px Arial';
-                ctx.textAlign = 'center';
-                ctx.fillText(`... and ${items.length - 12} more items`, canvas.width / 2, rowY + 20);
-            }
-            
-            // Footer
-            ctx.fillStyle = '#5f6368';
-            ctx.font = '16px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Generated by Perfume Sales Tracker', canvas.width / 2, canvas.height - 80);
-            
-            // Download based on format
-            if (format === 'jpg') {
-                canvas.toBlob(function(blob) {
-                    const link = document.createElement('a');
-                    link.href = URL.createObjectURL(blob);
-                    link.download = `perfume_sales_${currentDate}.jpg`;
-                    link.click();
-                }, 'image/jpeg', 0.95);
-            } else if (format === 'pdf') {
-                const { jsPDF } = window.jspdf;
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const pdf = new jsPDF({
-                    orientation: 'portrait',
-                    unit: 'px',
-                    format: [canvas.width, canvas.height]
-                });
-                pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-                pdf.save(`perfume_sales_${currentDate}.pdf`);
-            }
-        }
+        <button class="btn btn-whatsapp" onclick="copyWA()">Copy Performance Summary</button>
         
-        function roundRect(ctx, x, y, width, height, radius) {
-            ctx.beginPath();
-            ctx.moveTo(x + radius, y);
-            ctx.lineTo(x + width - radius, y);
-            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-            ctx.lineTo(x + width, y + height - radius);
-            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-            ctx.lineTo(x + radius, y + height);
-            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-            ctx.lineTo(x, y + radius);
-            ctx.quadraticCurveTo(x, y, x + radius, y);
-            ctx.closePath();
-        }
-    </script>
+        <div class="card">
+            <h2>Entry History (Current File)</h2>
+            <div class="history" id="historyLog"></div>
+            <button class="btn btn-blue" style="background:#5f6368" onclick="exportData()">Export Updated Ledger</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let master = [];
+    let fileName = "Sisonke_Perfume.xlsx";
+
+    function format(v) { return "R" + (v || 0).toLocaleString('en-ZA', {minimumFractionDigits:2}); }
+
+    function handleFile(input) {
+        const file = input.files[0];
+        if(!file) return;
+        fileName = file.name;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const data = new Uint8Array(e.target.result);
+            const wb = XLSX.read(data, {type: 'array'});
+            master = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
+            document.getElementById('mainUI').classList.add('unlocked');
+            document.getElementById('statusText').innerHTML = `Linked: <strong>${fileName}</strong>`;
+            refresh();
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function refresh() {
+        let stock = 0, sales = 0, log = "";
+        master.forEach((row, i) => {
+            if(i === 0) return;
+            const type = row[1];
+            const qty = row[3];
+            const money = parseFloat(row[4]) || 0;
+
+            if(type === "STOCK") stock += money;
+            if(type === "SALE") sales += money;
+
+            log = `<div class="history-item">
+                    <span><span class="type-tag ${type==='STOCK'?'tag-stock':'tag-sale'}">${type}</span> ${row[2]} (x${qty})</span>
+                    <strong>${format(money)}</strong>
+                  </div>` + log;
+        });
+
+        document.getElementById('dashStock').textContent = format(stock);
+        document.getElementById('dashSales').textContent = format(sales);
+        document.getElementById('dashProfit').textContent = format(sales - stock);
+        document.getElementById('historyLog').innerHTML = log || "No entries yet";
+    }
+
+    function syncStock() {
+        const p = document.getElementById('stProduct').value;
+        const q = document.getElementById('stQty').value;
+        const c = document.getElementById('stCost').value;
+        if(!q || !c) return alert("Fill all fields");
+        saveEntry("STOCK", p, q, c);
+        document.getElementById('stQty').value = ""; document.getElementById('stCost').value = "";
+    }
+
+    function syncSale() {
+        const p = document.getElementById('saProduct').value;
+        const q = document.getElementById('saQty').value;
+        const t = document.getElementById('saTotal').value;
+        if(!q || !t) return alert("Fill all fields");
+        saveEntry("SALE", p, q, t);
+        document.getElementById('saQty').value = ""; document.getElementById('saTotal').value = "";
+    }
+
+    function saveEntry(type, prod, qty, money) {
+        const date = new Date().toLocaleDateString('en-ZA');
+        if(master.length === 0) master.push(["Date", "Type", "Product", "Qty", "Amount"]);
+        master.push([date, type, prod, qty, parseFloat(money)]);
+        refresh();
+    }
+
+    function exportData() {
+        const ws = XLSX.utils.aoa_to_sheet(master);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "PerfumeTracker");
+        XLSX.writeFile(wb, "Updated_" + fileName);
+    }
+
+    function copyWA() {
+        const s = document.getElementById('dashStock').textContent;
+        const r = document.getElementById('dashSales').textContent;
+        const p = document.getElementById('dashProfit').textContent;
+        const text = `*SISONKE PERFORMANCE SUMMARY*\n---\nStock Bought: ${s}\nSales Revenue: ${r}\n*Net Profit: ${p}*\n---`;
+        navigator.clipboard.writeText(text);
+        alert("Summary Copied!");
+    }
+</script>
 </body>
 </html>
