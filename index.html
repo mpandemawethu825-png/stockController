@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sisonke Daily & Weekly Tracker</title>
+    <title>Sisonke Daily Financial Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -13,12 +13,11 @@
         }
 
         body { font-family: 'Roboto', sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 10px; }
-        .container { max-width: 500px; margin: 0 auto; }
+        .container { width: 100%; max-width: 500px; margin: 0 auto; }
 
         .header { text-align: center; padding: 15px 0; }
         .header h1 { font-size: 20px; font-weight: 500; margin: 0; }
 
-        /* Dashboard */
         .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .dash-item { background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .dash-item label { font-size: 10px; text-transform: uppercase; color: #5F6368; display: block; }
@@ -32,23 +31,20 @@
 
         .upload-area { border: 2px dashed var(--google-blue); padding: 20px; text-align: center; border-radius: 8px; background: #E8F0FE; cursor: pointer; }
         
-        .form-row { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         label { font-size: 12px; font-weight: 500; color: #3C4043; display: block; margin-bottom: 4px; }
         input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none; }
-        input:focus { border-color: var(--google-blue); }
 
         .btn { width: 100%; padding: 14px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; margin-top: 5px; font-size: 14px; transition: 0.2s; }
         .btn-blue { background: var(--google-blue); color: white; }
         .btn-green { background: var(--google-green); color: white; }
         .btn-whatsapp { background: #25D366; color: white; font-weight: 700; margin-top: 10px; }
-        .btn-export { background: #5F6368; color: white; margin-top: 15px; }
         
+        .history { font-size: 12px; max-height: 180px; overflow-y: auto; margin-top: 10px; }
+        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
         .type-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; color: white; text-transform: uppercase; margin-right: 5px; }
         .tag-stock { background: var(--google-red); }
         .tag-sale { background: var(--google-green); }
-
-        .history { font-size: 12px; max-height: 180px; overflow-y: auto; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body>
@@ -64,11 +60,11 @@
             <strong id="dashStock" style="color: var(--google-red);">R0.00</strong>
         </div>
         <div class="dash-item">
-            <label>Daily Sales (Revenue)</label>
+            <label>Daily Sales Revenue</label>
             <strong id="dashSales" style="color: var(--google-green);">R0.00</strong>
         </div>
         <div class="dash-item" style="grid-column: span 2;">
-            <label>Net Weekly Profit</label>
+            <label>Estimated Net Profit</label>
             <strong id="dashProfit">R0.00</strong>
         </div>
     </div>
@@ -82,9 +78,9 @@
 
     <div id="mainUI" class="lock">
         <div class="card">
-            <h2>Weekly Stock Purchase (Wholesale)</h2>
+            <h2>Weekly Stock Purchase</h2>
             <div class="form-row">
-                <div>
+                <div style="grid-column: span 2;">
                     <label>Product</label>
                     <select id="stProduct">
                         <optgroup label="Attars">
@@ -107,29 +103,37 @@
                         </optgroup>
                     </select>
                 </div>
+            </div>
+            <div class="form-row">
                 <div>
                     <label>Quantity</label>
                     <input type="number" id="stQty" placeholder="0">
                 </div>
+                <div>
+                    <label>Wholesale Cost (R)</label>
+                    <input type="number" id="stCost" placeholder="0.00">
+                </div>
             </div>
-            <label>Total Wholesale Cost (R)</label>
-            <input type="number" id="stCost" placeholder="0.00">
-            <button class="btn btn-blue" onclick="syncStock()">Record Stock In</button>
+            <div>
+                <label>Expected Selling Price (R)</label>
+                <input type="number" id="stSelling" placeholder="0.00">
+            </div>
+            <button class="btn btn-blue" onclick="syncStock()">Record Stock Purchase</button>
         </div>
 
         <div class="card">
-            <h2>Daily Sales Income (Retail)</h2>
+            <h2>Daily Sales Income</h2>
             <label>Total Amount Made Today (R)</label>
             <input type="number" id="saTotal" placeholder="0.00">
-            <button class="btn btn-green" onclick="syncSale()">Record Daily Sales</button>
+            <button class="btn btn-green" onclick="syncSale()">Record Today's Sales</button>
         </div>
 
         <button class="btn btn-whatsapp" onclick="copyWA()">Copy WhatsApp Summary</button>
         
         <div class="card">
-            <h2>Session History</h2>
+            <h2>Activity History</h2>
             <div class="history" id="historyLog"></div>
-            <button class="btn btn-export" onclick="exportData()">Export Final Ledger</button>
+            <button class="btn" style="background: #5F6368; color: white; margin-top: 15px;" onclick="exportData()">Export Updated Ledger</button>
         </div>
     </div>
 </div>
@@ -157,46 +161,47 @@
     }
 
     function refresh() {
-        let stock = 0, sales = 0, log = "";
+        let stockCost = 0, revenue = 0, log = "";
         master.forEach((row, i) => {
             if(i === 0) return;
             const type = row[1];
-            const money = parseFloat(row[4]) || 0;
-            if(type === "STOCK") stock += money;
-            if(type === "SALE") sales += money;
+            const amount = parseFloat(row[4]) || 0;
+            if(type === "STOCK") stockCost += amount;
+            if(type === "SALE") revenue += amount;
 
             log = `<div class="history-item">
                     <span><span class="type-tag ${type==='STOCK'?'tag-stock':'tag-sale'}">${type}</span> ${row[2]}</span>
-                    <strong>${format(money)}</strong>
+                    <strong>${format(amount)}</strong>
                   </div>` + log;
         });
-
-        document.getElementById('dashStock').textContent = format(stock);
-        document.getElementById('dashSales').textContent = format(sales);
-        document.getElementById('dashProfit').textContent = format(sales - stock);
-        document.getElementById('historyLog').innerHTML = log || "No entries found.";
+        document.getElementById('dashStock').textContent = format(stockCost);
+        document.getElementById('dashSales').textContent = format(revenue);
+        document.getElementById('dashProfit').textContent = format(revenue - stockCost);
+        document.getElementById('historyLog').innerHTML = log || "No entries yet.";
     }
 
     function syncStock() {
         const p = document.getElementById('stProduct').value;
         const q = document.getElementById('stQty').value;
         const c = document.getElementById('stCost').value;
-        if(!q || !c) return alert("Please enter Quantity and Cost");
-        saveEntry("STOCK", `${p} (x${q})`, q, c);
-        document.getElementById('stQty').value = ""; document.getElementById('stCost').value = "";
+        const s = document.getElementById('stSelling').value;
+        if(!q || !c || !s) return alert("Fill all fields");
+        
+        saveEntry("STOCK", `${p} (x${q}) @ Selling Price: R${s}`, q, c);
+        ["stQty", "stCost", "stSelling"].forEach(id => document.getElementById(id).value = "");
     }
 
     function syncSale() {
         const t = document.getElementById('saTotal').value;
-        if(!t) return alert("Please enter the total sales amount");
-        saveEntry("SALE", "Daily Retail Total", "1", t);
+        if(!t) return alert("Enter total amount");
+        saveEntry("SALE", "Daily Cash Total", "1", t);
         document.getElementById('saTotal').value = "";
     }
 
-    function saveEntry(type, prod, qty, money) {
+    function saveEntry(type, desc, qty, amt) {
         const date = new Date().toLocaleDateString('en-ZA');
         if(master.length === 0) master.push(["Date", "Type", "Description", "Qty", "Amount"]);
-        master.push([date, type, prod, qty, parseFloat(money)]);
+        master.push([date, type, desc, qty, parseFloat(amt)]);
         refresh();
     }
 
@@ -211,19 +216,9 @@
         const s = document.getElementById('dashStock').textContent;
         const r = document.getElementById('dashSales').textContent;
         const p = document.getElementById('dashProfit').textContent;
-        const date = new Date().toLocaleDateString('en-ZA');
-        
-        const text = `*SISONKE TRACKER SUMMARY [${date}]*\n` +
-                     `--------------------------\n` +
-                     `📉 Weekly Stock In: ${s}\n` +
-                     `💰 Daily Sales Out: ${r}\n` +
-                     `--------------------------\n` +
-                     `✅ *Net Position: ${p}*\n` +
-                     `--------------------------\n` +
-                     `_Every Rand Has Purpose_`;
-        
+        const text = `*SISONKE TRACKER SUMMARY*\nStock Cost: ${s}\nDaily Sales: ${r}\n*Net Position: ${p}*`;
         navigator.clipboard.writeText(text);
-        alert("Summary Copied to Clipboard!");
+        alert("Summary Copied!");
     }
 </script>
 </body>
