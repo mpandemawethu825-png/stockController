@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sisonke Daily Financial Tracker</title>
+    <title>Sisonke Perfume Sales Tracker</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -16,7 +16,8 @@
         .container { width: 100%; max-width: 500px; margin: 0 auto; }
 
         .header { text-align: center; padding: 15px 0; }
-        .header h1 { font-size: 20px; font-weight: 500; margin: 0; }
+        .header h1 { font-size: 22px; font-weight: 700; color: var(--google-blue); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .header p { font-size: 13px; color: #5F6368; margin-top: 5px; }
 
         .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
         .dash-item { background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
@@ -24,7 +25,7 @@
         .dash-item strong { font-size: 15px; display: block; margin-top: 4px; }
 
         .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .card h2 { font-size: 14px; margin-bottom: 12px; color: var(--google-blue); border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        .card h2 { font-size: 14px; margin-bottom: 12px; color: var(--google-blue); border-bottom: 1px solid #eee; padding-bottom: 8px; text-transform: uppercase; font-weight: 700; }
 
         .lock { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
         .unlocked { opacity: 1; pointer-events: all; filter: none; }
@@ -33,7 +34,7 @@
         
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
         label { font-size: 12px; font-weight: 500; color: #3C4043; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none; }
+        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none; background-color: #fff; }
 
         .btn { width: 100%; padding: 14px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; margin-top: 5px; font-size: 14px; transition: 0.2s; }
         .btn-blue { background: var(--google-blue); color: white; }
@@ -51,27 +52,28 @@
 
 <div class="container">
     <div class="header">
-        <h1>Sisonke Daily Financial Tracker</h1>
+        <h1>Sisonke Perfume Tracker</h1>
+        <p>Weekly Stock & Daily Sales Manager</p>
     </div>
 
     <div class="dashboard">
         <div class="dash-item">
-            <label>Weekly Stock Cost</label>
+            <label>Stock Investment</label>
             <strong id="dashStock" style="color: var(--google-red);">R0.00</strong>
         </div>
         <div class="dash-item">
-            <label>Daily Sales Revenue</label>
+            <label>Sales Revenue</label>
             <strong id="dashSales" style="color: var(--google-green);">R0.00</strong>
         </div>
         <div class="dash-item" style="grid-column: span 2;">
-            <label>Estimated Net Profit</label>
+            <label>Net Profit (This Period)</label>
             <strong id="dashProfit">R0.00</strong>
         </div>
     </div>
 
     <div class="card">
         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-            <div id="statusText"><strong>Link Spreadsheet</strong></div>
+            <div id="statusText"><strong>Link Perfume Ledger</strong></div>
             <input type="file" id="fileInput" accept=".xlsx" style="display:none" onchange="handleFile(this)">
         </div>
     </div>
@@ -81,7 +83,7 @@
             <h2>Weekly Stock Purchase</h2>
             <div class="form-row">
                 <div style="grid-column: span 2;">
-                    <label>Product</label>
+                    <label>Perfume Product</label>
                     <select id="stProduct">
                         <optgroup label="Attars">
                             <option value="White Oud Attar">White Oud Attar</option>
@@ -110,12 +112,12 @@
                     <input type="number" id="stQty" placeholder="0">
                 </div>
                 <div>
-                    <label>Wholesale Cost (R)</label>
+                    <label>Wholesale (R)</label>
                     <input type="number" id="stCost" placeholder="0.00">
                 </div>
             </div>
             <div>
-                <label>Expected Selling Price (R)</label>
+                <label>Selling Price (Retail R)</label>
                 <input type="number" id="stSelling" placeholder="0.00">
             </div>
             <button class="btn btn-blue" onclick="syncStock()">Record Stock Purchase</button>
@@ -123,17 +125,17 @@
 
         <div class="card">
             <h2>Daily Sales Income</h2>
-            <label>Total Amount Made Today (R)</label>
+            <label>Total Sales Amount for Today (R)</label>
             <input type="number" id="saTotal" placeholder="0.00">
-            <button class="btn btn-green" onclick="syncSale()">Record Today's Sales</button>
+            <button class="btn btn-green" onclick="syncSale()">Record Daily Sales</button>
         </div>
 
-        <button class="btn btn-whatsapp" onclick="copyWA()">Copy WhatsApp Summary</button>
+        <button class="btn btn-whatsapp" onclick="copyWA()">📱 Copy WhatsApp Summary</button>
         
         <div class="card">
-            <h2>Activity History</h2>
+            <h2>Ledger History</h2>
             <div class="history" id="historyLog"></div>
-            <button class="btn" style="background: #5F6368; color: white; margin-top: 15px;" onclick="exportData()">Export Updated Ledger</button>
+            <button class="btn" style="background: #5F6368; color: white; margin-top: 15px;" onclick="exportData()">📥 Download Updated Ledger</button>
         </div>
     </div>
 </div>
@@ -154,7 +156,7 @@
             const wb = XLSX.read(data, {type: 'array'});
             master = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
             document.getElementById('mainUI').classList.add('unlocked');
-            document.getElementById('statusText').innerHTML = `Linked: <strong>${fileName}</strong>`;
+            document.getElementById('statusText').innerHTML = `✅ Linked: <strong>${fileName}</strong>`;
             refresh();
         };
         reader.readAsArrayBuffer(file);
@@ -185,16 +187,16 @@
         const q = document.getElementById('stQty').value;
         const c = document.getElementById('stCost').value;
         const s = document.getElementById('stSelling').value;
-        if(!q || !c || !s) return alert("Fill all fields");
+        if(!q || !c || !s) return alert("Please fill in Qty, Wholesale, and Selling Price.");
         
-        saveEntry("STOCK", `${p} (x${q}) @ Selling Price: R${s}`, q, c);
+        saveEntry("STOCK", `${p} (x${q}) | S.P: R${s}`, q, c);
         ["stQty", "stCost", "stSelling"].forEach(id => document.getElementById(id).value = "");
     }
 
     function syncSale() {
         const t = document.getElementById('saTotal').value;
-        if(!t) return alert("Enter total amount");
-        saveEntry("SALE", "Daily Cash Total", "1", t);
+        if(!t) return alert("Please enter today's total income.");
+        saveEntry("SALE", "Daily Retail Total", "1", t);
         document.getElementById('saTotal').value = "";
     }
 
@@ -216,9 +218,10 @@
         const s = document.getElementById('dashStock').textContent;
         const r = document.getElementById('dashSales').textContent;
         const p = document.getElementById('dashProfit').textContent;
-        const text = `*SISONKE TRACKER SUMMARY*\nStock Cost: ${s}\nDaily Sales: ${r}\n*Net Position: ${p}*`;
+        const d = new Date().toLocaleDateString('en-ZA');
+        const text = `*SISONKE PERFUME SUMMARY [${d}]*\n--------------------------\nStock Purchase: ${s}\nDaily Sales: ${r}\n--------------------------\n*Net Profit: ${p}*`;
         navigator.clipboard.writeText(text);
-        alert("Summary Copied!");
+        alert("WhatsApp Summary Copied!");
     }
 </script>
 </body>
