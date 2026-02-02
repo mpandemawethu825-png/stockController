@@ -1,228 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sisonke Perfume Sales Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        :root {
-            --google-blue: #1A73E8; --google-red: #D93025; --google-green: #1E8E3E;
-            --bg-light: #F1F3F4; --text-main: #202124; --border: #DADCE0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Sisonke Edutech Dashboard</title>
 
-        body { font-family: 'Roboto', sans-serif; background: var(--bg-light); color: var(--text-main); margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 500px; margin: 0 auto; }
+<style>
+/* =========================
+   AMAZON × FACEBOOK THEME
+   FAST & MOBILE-FIRST
+   ========================= */
+:root {
+  --fb-blue: #1877f2;
+  --fb-blue-dark: #0f5dc9;
+  --amazon-orange: #ff9900;
+  --amazon-orange-dark: #e68a00;
+  --amazon-dark: #232f3e;
+  --amazon-dark-2: #111827;
+  --white: #ffffff;
+  --soft: #f8fafc;
+  --muted: #94a3b8;
+}
 
-        .header { text-align: center; padding: 15px 0; }
-        .header h1 { font-size: 22px; font-weight: 700; color: var(--google-blue); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
-        .header p { font-size: 13px; color: #5F6368; margin-top: 5px; }
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-        .dash-item { background: white; padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .dash-item label { font-size: 10px; text-transform: uppercase; color: #5F6368; display: block; }
-        .dash-item strong { font-size: 15px; display: block; margin-top: 4px; }
+body {
+  margin: 0;
+  padding: 20px 12px;
+  font-family: system-ui, -apple-system, Segoe UI, Inter, sans-serif;
+  background: linear-gradient(135deg, var(--amazon-dark), var(--amazon-dark-2));
+  color: var(--soft);
+}
 
-        .card { background: white; border-radius: 8px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-        .card h2 { font-size: 14px; margin-bottom: 12px; color: var(--google-blue); border-bottom: 1px solid #eee; padding-bottom: 8px; text-transform: uppercase; font-weight: 700; }
+/* Header */
+h1 {
+  text-align: center;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 6px 0 2px;
+  color: var(--amazon-orange);
+}
 
-        .lock { opacity: 0.3; pointer-events: none; filter: grayscale(1); }
-        .unlocked { opacity: 1; pointer-events: all; filter: none; }
+.subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
 
-        .upload-area { border: 2px dashed var(--google-blue); padding: 20px; text-align: center; border-radius: 8px; background: #E8F0FE; cursor: pointer; }
-        
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
-        label { font-size: 12px; font-weight: 500; color: #3C4043; display: block; margin-bottom: 4px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-size: 14px; outline: none; background-color: #fff; }
+/* Card */
+.container {
+  max-width: 900px;
+  margin: auto;
+  background: var(--white);
+  color: var(--amazon-dark);
+  padding: 20px;
+  border-radius: 18px;
+  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
+}
 
-        .btn { width: 100%; padding: 14px; border-radius: 6px; border: none; font-weight: 500; cursor: pointer; margin-top: 5px; font-size: 14px; transition: 0.2s; }
-        .btn-blue { background: var(--google-blue); color: white; }
-        .btn-green { background: var(--google-green); color: white; }
-        .btn-whatsapp { background: #25D366; color: white; font-weight: 700; margin-top: 10px; }
-        
-        .history { font-size: 12px; max-height: 180px; overflow-y: auto; margin-top: 10px; }
-        .history-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .type-tag { font-size: 9px; padding: 2px 6px; border-radius: 10px; color: white; text-transform: uppercase; margin-right: 5px; }
-        .tag-stock { background: var(--google-red); }
-        .tag-sale { background: var(--google-green); }
-    </style>
+/* Sections */
+.section {
+  margin-top: 26px;
+  padding-top: 14px;
+  border-top: 2px solid rgba(24,119,242,0.18);
+}
+
+.section h3 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: var(--fb-blue);
+}
+
+/* Inputs */
+input, select {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 2px solid rgba(24,119,242,0.25);
+  background: var(--soft);
+  color: var(--amazon-dark);
+  font-size: 14px;
+  margin-bottom: 10px;
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: var(--fb-blue);
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: none;
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  background: linear-gradient(180deg, var(--fb-blue), var(--fb-blue-dark));
+  color: var(--white);
+  margin-bottom: 10px;
+}
+
+.copy {
+  background: linear-gradient(180deg, var(--amazon-orange), var(--amazon-orange-dark));
+  color: var(--amazon-dark);
+}
+
+.clear {
+  background: linear-gradient(180deg, var(--amazon-dark), var(--amazon-dark-2));
+  color: var(--soft);
+}
+
+/* Textarea */
+textarea {
+  width: 100%;
+  min-height: 240px;
+  padding: 16px;
+  border-radius: 18px;
+  border: 2px solid rgba(255,153,0,0.35);
+  background: var(--soft);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+  resize: none;
+}
+
+/* Desktop Enhancements */
+@media (min-width: 720px) {
+  body {
+    padding: 32px 20px;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  .container {
+    padding: 28px;
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+  }
+
+  .row > * {
+    flex: 1;
+  }
+
+  button {
+    width: auto;
+    padding: 14px 20px;
+  }
+}
+</style>
 </head>
+
 <body>
 
+<h1>📊 Sisonke Edutech</h1>
+<div class="subtitle">Fast. Offline. WhatsApp-Ready.</div>
+
 <div class="container">
-    <div class="header">
-        <h1>Sisonke Perfume Tracker</h1>
-        <p>Weekly Stock & Daily Sales Manager</p>
+
+  <!-- INPUT -->
+  <div class="section">
+    <h3>➕ Add Record</h3>
+
+    <select id="type">
+      <option value="income">💰 Income</option>
+      <option value="expense">💸 Expense</option>
+      <option value="class">📚 Class Held</option>
+      <option value="learner">🎓 New Learner</option>
+    </select>
+
+    <div class="row">
+      <input type="number" id="amount" placeholder="Amount (R)">
+      <input type="text" id="note" placeholder="Note (optional)">
     </div>
 
-    <div class="dashboard">
-        <div class="dash-item">
-            <label>Stock Investment</label>
-            <strong id="dashStock" style="color: var(--google-red);">R0.00</strong>
-        </div>
-        <div class="dash-item">
-            <label>Sales Revenue</label>
-            <strong id="dashSales" style="color: var(--google-green);">R0.00</strong>
-        </div>
-        <div class="dash-item" style="grid-column: span 2;">
-            <label>Net Profit (This Period)</label>
-            <strong id="dashProfit">R0.00</strong>
-        </div>
+    <button onclick="addRecord()">Add Record</button>
+  </div>
+
+  <!-- REPORTS -->
+  <div class="section">
+    <h3>📑 Generate Reports</h3>
+    <div class="row">
+      <button onclick="generateReport('daily')">Daily</button>
+      <button onclick="generateReport('weekly')">Weekly</button>
+      <button onclick="generateReport('monthly')">Monthly</button>
     </div>
+  </div>
 
-    <div class="card">
-        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-            <div id="statusText"><strong>Link Perfume Ledger</strong></div>
-            <input type="file" id="fileInput" accept=".xlsx" style="display:none" onchange="handleFile(this)">
-        </div>
-    </div>
+  <!-- OUTPUT -->
+  <div class="section">
+    <h3>📲 WhatsApp Report</h3>
+    <textarea id="output" readonly></textarea>
+    <button class="copy" onclick="copyReport()">Copy for WhatsApp</button>
+    <button class="clear" onclick="clearData()">Clear All Data</button>
+  </div>
 
-    <div id="mainUI" class="lock">
-        <div class="card">
-            <h2>Weekly Stock Purchase</h2>
-            <div class="form-row">
-                <div style="grid-column: span 2;">
-                    <label>Perfume Product</label>
-                    <select id="stProduct">
-                        <optgroup label="Attars">
-                            <option value="White Oud Attar">White Oud Attar</option>
-                            <option value="Arya Attar">Arya Attar</option>
-                            <option value="Blue Savage Attar">Blue Savage Attar</option>
-                        </optgroup>
-                        <optgroup label="Parfumos 50ml">
-                            <option value="Black Oud Parfumo 50ml">Black Oud Parfumo 50ml</option>
-                            <option value="Yalla Parfumo 50ml">Yalla Parfumo 50ml</option>
-                            <option value="Beauty Parfumo 50ml">Beauty Parfumo 50ml</option>
-                        </optgroup>
-                        <optgroup label="Perfumes">
-                            <option value="Nomads Land 15ml">Nomads Land 15ml</option>
-                        </optgroup>
-                        <optgroup label="Lotions">
-                            <option value="Flawless Classic Lotion">Flawless Classic Lotion</option>
-                            <option value="Black Oud Lotion">Black Oud Lotion</option>
-                            <option value="Oud & Vanilla Lotion">Oud & Vanilla Lotion</option>
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
-            <div class="form-row">
-                <div>
-                    <label>Quantity</label>
-                    <input type="number" id="stQty" placeholder="0">
-                </div>
-                <div>
-                    <label>Wholesale (R)</label>
-                    <input type="number" id="stCost" placeholder="0.00">
-                </div>
-            </div>
-            <div>
-                <label>Selling Price (Retail R)</label>
-                <input type="number" id="stSelling" placeholder="0.00">
-            </div>
-            <button class="btn btn-blue" onclick="syncStock()">Record Stock Purchase</button>
-        </div>
-
-        <div class="card">
-            <h2>Daily Sales Income</h2>
-            <label>Total Sales Amount for Today (R)</label>
-            <input type="number" id="saTotal" placeholder="0.00">
-            <button class="btn btn-green" onclick="syncSale()">Record Daily Sales</button>
-        </div>
-
-        <button class="btn btn-whatsapp" onclick="copyWA()">📱 Copy WhatsApp Summary</button>
-        
-        <div class="card">
-            <h2>Ledger History</h2>
-            <div class="history" id="historyLog"></div>
-            <button class="btn" style="background: #5F6368; color: white; margin-top: 15px;" onclick="exportData()">📥 Download Updated Ledger</button>
-        </div>
-    </div>
 </div>
 
 <script>
-    let master = [];
-    let fileName = "Sisonke_Perfume_Ledger.xlsx";
+let data = JSON.parse(localStorage.getItem("sisonkeData")) || [];
 
-    function format(v) { return "R" + (v || 0).toLocaleString('en-ZA', {minimumFractionDigits:2}); }
+function save() {
+  localStorage.setItem("sisonkeData", JSON.stringify(data));
+}
 
-    function handleFile(input) {
-        const file = input.files[0];
-        if(!file) return;
-        fileName = file.name;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result);
-            const wb = XLSX.read(data, {type: 'array'});
-            master = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header: 1});
-            document.getElementById('mainUI').classList.add('unlocked');
-            document.getElementById('statusText').innerHTML = `✅ Linked: <strong>${fileName}</strong>`;
-            refresh();
-        };
-        reader.readAsArrayBuffer(file);
-    }
+function addRecord() {
+  const type = document.getElementById("type").value;
+  const amount = Number(document.getElementById("amount").value || 0);
+  const note = document.getElementById("note").value;
 
-    function refresh() {
-        let stockCost = 0, revenue = 0, log = "";
-        master.forEach((row, i) => {
-            if(i === 0) return;
-            const type = row[1];
-            const amount = parseFloat(row[4]) || 0;
-            if(type === "STOCK") stockCost += amount;
-            if(type === "SALE") revenue += amount;
+  data.push({ type, amount, note, date: new Date().toISOString() });
+  save();
+  alert("Record added ✔");
+}
 
-            log = `<div class="history-item">
-                    <span><span class="type-tag ${type==='STOCK'?'tag-stock':'tag-sale'}">${type}</span> ${row[2]}</span>
-                    <strong>${format(amount)}</strong>
-                  </div>` + log;
-        });
-        document.getElementById('dashStock').textContent = format(stockCost);
-        document.getElementById('dashSales').textContent = format(revenue);
-        document.getElementById('dashProfit').textContent = format(revenue - stockCost);
-        document.getElementById('historyLog').innerHTML = log || "No entries yet.";
-    }
+function filterByDays(days) {
+  const now = new Date();
+  return data.filter(d => (now - new Date(d.date)) / 86400000 <= days);
+}
 
-    function syncStock() {
-        const p = document.getElementById('stProduct').value;
-        const q = document.getElementById('stQty').value;
-        const c = document.getElementById('stCost').value;
-        const s = document.getElementById('stSelling').value;
-        if(!q || !c || !s) return alert("Please fill in Qty, Wholesale, and Selling Price.");
-        
-        saveEntry("STOCK", `${p} (x${q}) | S.P: R${s}`, q, c);
-        ["stQty", "stCost", "stSelling"].forEach(id => document.getElementById(id).value = "");
-    }
+function generateReport(mode) {
+  let records, title;
+  if (mode === "daily") { records = filterByDays(1); title = "DAILY REPORT"; }
+  else if (mode === "weekly") { records = filterByDays(7); title = "WEEKLY REPORT"; }
+  else {
+    const n = new Date();
+    records = data.filter(d => {
+      const t = new Date(d.date);
+      return t.getMonth() === n.getMonth() && t.getFullYear() === n.getFullYear();
+    });
+    title = "MONTHLY REPORT";
+  }
 
-    function syncSale() {
-        const t = document.getElementById('saTotal').value;
-        if(!t) return alert("Please enter today's total income.");
-        saveEntry("SALE", "Daily Retail Total", "1", t);
-        document.getElementById('saTotal').value = "";
-    }
+  let income = 0, expense = 0, classes = 0, learners = 0;
+  records.forEach(r => {
+    if (r.type === "income") income += r.amount;
+    if (r.type === "expense") expense += r.amount;
+    if (r.type === "class") classes++;
+    if (r.type === "learner") learners++;
+  });
 
-    function saveEntry(type, desc, qty, amt) {
-        const date = new Date().toLocaleDateString('en-ZA');
-        if(master.length === 0) master.push(["Date", "Type", "Description", "Qty", "Amount"]);
-        master.push([date, type, desc, qty, parseFloat(amt)]);
-        refresh();
-    }
+  document.getElementById("output").value =
+`📊 SISONKE EDUTECH – ${title}
 
-    function exportData() {
-        const ws = XLSX.utils.aoa_to_sheet(master);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SisonkeData");
-        XLSX.writeFile(wb, "Updated_" + fileName);
-    }
+📚 Classes Held: ${classes}
+🎓 New Learners: ${learners}
 
-    function copyWA() {
-        const s = document.getElementById('dashStock').textContent;
-        const r = document.getElementById('dashSales').textContent;
-        const p = document.getElementById('dashProfit').textContent;
-        const d = new Date().toLocaleDateString('en-ZA');
-        const text = `*SISONKE PERFUME SUMMARY [${d}]*\n--------------------------\nStock Purchase: ${s}\nDaily Sales: ${r}\n--------------------------\n*Net Profit: ${p}*`;
-        navigator.clipboard.writeText(text);
-        alert("WhatsApp Summary Copied!");
-    }
+💰 Income: R${income}
+💸 Expenses: R${expense}
+💵 Net Balance: R${income - expense}
+
+📅 Generated: ${new Date().toLocaleDateString()}
+`;
+}
+
+function copyReport() {
+  const o = document.getElementById("output");
+  o.select();
+  document.execCommand("copy");
+  alert("Copied! Paste into WhatsApp 📲");
+}
+
+function clearData() {
+  if (confirm("Delete ALL data?")) {
+    localStorage.removeItem("sisonkeData");
+    data = [];
+    alert("Data cleared");
+  }
+}
 </script>
+
 </body>
 </html>
