@@ -1,282 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Sisonke Edutech Pro</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sisonke Edutech & Multi-Business Pro</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1A73E8; --perfume: #E1306C; --tutoring: #F9AB00; --cv: #1E8E3E;
+            --bg: #F1F3F4; --card: #FFFFFF; --text: #202124;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
+        .container { max-width: 550px; margin: auto; }
+        .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
+        h2 { margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        
+        label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #5f6368; }
+        select, input, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dadce0; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        
+        .stream-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 15px; }
+        .stream-btn { font-size: 10px; padding: 8px; border-radius: 6px; border: none; color: white; cursor: pointer; opacity: 0.6; font-weight: bold; }
+        .stream-btn.active { opacity: 1; transform: scale(1.05); }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+        .allocation-box { background: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; }
+        .alloc-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
+        .alloc-row b { color: var(--primary); }
 
-<style>
-:root {
-  --fb-blue: #1877f2;
-  --amazon-orange: #ff9900;
-  --amazon-dark: #232f3e;
-  --white: #ffffff;
-  --soft: #f8fafc;
-  --muted: #94a3b8;
-}
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .btn-save { background: var(--primary); color: white; margin-top: 5px; }
+        .btn-pdf { background: #E1306C; color: white; }
+        .btn-wa { background: #25D366; color: white; }
+        .btn-period { background: #3c4043; color: white; padding: 10px; }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body {
-  margin: 0; padding: 20px 12px;
-  font-family: system-ui, -apple-system, sans-serif;
-  background: linear-gradient(135deg, var(--amazon-dark), #111827);
-  color: var(--soft);
-}
-
-.container {
-  max-width: 800px; margin: auto; background: var(--white);
-  color: var(--amazon-dark); padding: 24px; border-radius: 18px;
-  box-shadow: 0 18px 40px rgba(0,0,0,0.45);
-}
-
-h1 { text-align: center; color: var(--amazon-orange); margin-bottom: 5px; }
-.subtitle { text-align: center; color: var(--muted); font-size: 13px; margin-bottom: 25px; }
-
-.section { margin-top: 25px; padding-top: 15px; border-top: 1px solid #eee; }
-.section h3 { font-size: 16px; color: var(--fb-blue); margin-bottom: 12px; }
-
-/* Flexbox Row for inputs */
-.row { display: flex; gap: 10px; }
-
-input, select {
-  width: 100%; padding: 12px; border-radius: 10px; 
-  border: 1px solid #ccc; background: var(--soft);
-  margin-bottom: 10px; font-size: 14px;
-}
-
-/* Make note expand when amount is hidden */
-#note { flex-grow: 1; } 
-
-button {
-  width: 100%; padding: 14px; border-radius: 12px; border: none;
-  font-weight: bold; cursor: pointer; color: white; margin-bottom: 8px;
-  font-size: 14px; transition: opacity 0.2s;
-}
-button:active { opacity: 0.8; }
-
-.btn-primary { background: var(--fb-blue); }
-.btn-whatsapp { background: #25D366; }
-.btn-pdf { background: #E1306C; } /* Instagram/PDF color style */
-.btn-clear { background: var(--amazon-dark); }
-
-textarea {
-  width: 100%; min-height: 140px; padding: 12px; border-radius: 12px;
-  background: #f0f2f5; border: 1px solid #ccc; font-family: monospace;
-  margin-bottom: 10px;
-}
-
-/* Helper to hide elements */
-.hidden { display: none !important; }
-
-@media (min-width: 720px) {
-  .report-actions { display: flex; gap: 10px; }
-}
-</style>
+        #reportOutput { background: #202124; color: #00FF41; font-family: monospace; font-size: 12px; }
+        .hidden { display: none; }
+    </style>
 </head>
-
 <body>
 
-<h1>📊 Sisonke Edutech</h1>
-<div class="subtitle">Secure Data & PDF Reports</div>
-
 <div class="container">
-
-  <div class="section" style="border-top:none; margin-top:0;">
-    <h3>➕ Add Record</h3>
-    
-    <select id="type" onchange="toggleAmount()">
-      <option value="income">💰 Income</option>
-      <option value="expense">💸 Expense</option>
-      <option value="class">📚 Class Held</option>
-      <option value="learner">🎓 New Learner</option>
-    </select>
-
-    <div class="row">
-      <input type="number" id="amount" placeholder="Amount (R)" min="0">
-      <input type="text" id="note" placeholder="Description / Name">
+    <div style="text-align: center; margin-bottom: 15px;">
+        <h1 style="margin:0; font-size: 22px;">Sisonke Edutech Pro</h1>
+        <small style="color: #5f6368;">Perfumes | Tutoring | CV Services</small>
     </div>
 
-    <button class="btn-primary" onclick="addRecord()">Add Record</button>
-  </div>
+    <div class="card">
+        <h2>➕ Add Transaction</h2>
+        
+        <label>BUSINESS STREAM</label>
+        <div class="stream-grid">
+            <button class="stream-btn active" id="btn-perfume" style="background: var(--perfume);" onclick="setStream('Perfumes')">🌸 PERFUME</button>
+            <button class="stream-btn" id="btn-tutoring" style="background: var(--tutoring);" onclick="setStream('Tutoring')">📚 TUTORING</button>
+            <button class="stream-btn" id="btn-cv" style="background: var(--cv);" onclick="setStream('CV Services')">📄 CVs</button>
+        </div>
 
-  <div class="section">
-    <h3>📑 Select Period</h3>
-    <div class="row">
-      <button class="btn-primary" style="background:#4b5563" onclick="generate('daily')">Today</button>
-      <button class="btn-primary" style="background:#4b5563" onclick="generate('weekly')">Last 7 Days</button>
-      <button class="btn-primary" style="background:#4b5563" onclick="generate('monthly')">This Month</button>
+        <div style="display: flex; gap: 10px;">
+            <div style="flex: 1;">
+                <label>TYPE</label>
+                <select id="type" onchange="updateUI()">
+                    <option value="IN">💰 Money In</option>
+                    <option value="OUT">💸 Money Out</option>
+                </select>
+            </div>
+            <div style="flex: 1;">
+                <label>AMOUNT (ZAR)</label>
+                <input type="number" id="amount" placeholder="0.00" oninput="calculateSplits()">
+            </div>
+        </div>
+
+        <div id="allocDisplay" class="allocation-box">
+            <div class="alloc-row">Tithe (10%): <b id="a-tithe">R0.00</b></div>
+            <div class="alloc-row">Ads/Mkt (30%): <b id="a-ads">R0.00</b></div>
+            <div class="alloc-row">Stock Reserve (10%): <b id="a-stock">R0.00</b></div>
+            <div class="alloc-row" style="border-top: 1px solid #ddd; margin-top: 5px; padding-top: 5px;">Ops/Save/Grow (50%): <b id="a-other">R0.00</b></div>
+        </div>
+
+        <label>NOTE / DESCRIPTION</label>
+        <input type="text" id="desc" placeholder="e.g. Sales for 3x Perfumes">
+
+        <button class="btn btn-save" onclick="saveData()">SAVE TO DATABASE</button>
     </div>
-  </div>
 
-  <div class="section">
-    <h3>🚀 Actions</h3>
-    <textarea id="output" readonly placeholder="Generate a report to see details here..."></textarea>
-    
-    <div class="report-actions">
-        <button class="btn-whatsapp" onclick="copyWhatsApp()">📲 Copy for WhatsApp</button>
-        <button class="btn-pdf" onclick="downloadPDF()">📄 Download PDF Report</button>
+    <div class="card">
+        <h2>📑 Generate PDF Report</h2>
+        <div class="btn-group">
+            <button class="btn btn-period" onclick="runReport('daily')">TODAY</button>
+            <button class="btn btn-period" onclick="runReport('weekly')">WEEKLY</button>
+            <button class="btn btn-period" onclick="runReport('monthly')">MONTHLY</button>
+        </div>
+        
+        <textarea id="reportOutput" rows="8" readonly placeholder="Report preview..."></textarea>
+        
+        <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button class="btn btn-wa" style="flex: 1;" onclick="copyWhatsApp()">📲 WHATSAPP</button>
+            <button class="btn btn-pdf" style="flex: 1;" onclick="downloadPDF()">📄 DOWNLOAD PDF</button>
+        </div>
+        <button class="btn" style="background:#eee; color:#666; font-size: 10px; margin-top:10px;" onclick="clearHistory()">Reset All Data</button>
     </div>
-    
-    <button class="btn-clear" onclick="clearData()" style="margin-top:15px;">⚠️ Reset All Data</button>
-  </div>
-
 </div>
 
 <script>
-// Load data
-let data = JSON.parse(localStorage.getItem("sisonkeData")) || [];
-let currentReportData = []; // Store the currently filtered data for the PDF
-let currentTitle = "";
+    let db = JSON.parse(localStorage.getItem('sisonke_v3_db')) || [];
+    let currentStream = 'Perfumes';
+    let currentFilteredData = [];
+    let currentReportTitle = "";
 
-// 1. DYNAMIC INPUT LOGIC (The Fix)
-function toggleAmount() {
-  const type = document.getElementById("type").value;
-  const amountInput = document.getElementById("amount");
-  
-  // If it is a Class or Learner, hide the money input
-  if (type === "class" || type === "learner") {
-    amountInput.classList.add("hidden");
-    amountInput.value = ""; // Clear value
-  } else {
-    amountInput.classList.remove("hidden");
-  }
-}
+    function setStream(val) {
+        currentStream = val;
+        document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
+        if(val === 'Perfumes') document.getElementById('btn-perfume').classList.add('active');
+        if(val === 'Tutoring') document.getElementById('btn-tutoring').classList.add('active');
+        if(val === 'CV Services') document.getElementById('btn-cv').classList.add('active');
+    }
 
-// 2. ADD RECORD
-function addRecord() {
-  const type = document.getElementById("type").value;
-  const note = document.getElementById("note").value.trim();
-  const amountVal = document.getElementById("amount").value;
-  const amount = amountVal ? parseFloat(amountVal) : 0;
+    function format(v) {
+        return "R" + parseFloat(v || 0).toLocaleString('en-ZA', {minimumFractionDigits: 2});
+    }
 
-  // Validation
-  if ((type === 'income' || type === 'expense') && amount <= 0) {
-    return alert("Please enter a valid amount.");
-  }
-  if (!note && (type === 'class' || type === 'learner')) {
-    return alert("Please enter a note/name.");
-  }
+    function updateUI() {
+        const type = document.getElementById('type').value;
+        document.getElementById('allocDisplay').style.display = (type === 'IN') ? 'block' : 'none';
+    }
 
-  data.push({ type, amount, note, date: new Date().toISOString() });
-  localStorage.setItem("sisonkeData", JSON.stringify(data));
-  
-  // Reset Form
-  document.getElementById("amount").value = "";
-  document.getElementById("note").value = "";
-  alert("Saved: " + type.toUpperCase());
-}
+    function calculateSplits() {
+        const amt = parseFloat(document.getElementById('amount').value) || 0;
+        document.getElementById('a-tithe').innerText = format(amt * 0.1);
+        document.getElementById('a-ads').innerText = format(amt * 0.3);
+        document.getElementById('a-stock').innerText = format(amt * 0.1);
+        document.getElementById('a-other').innerText = format(amt * 0.5);
+    }
 
-// 3. GENERATE REPORT (Calculations)
-function generate(mode) {
-  const now = new Date();
-  const todayStr = now.toLocaleDateString();
+    function saveData() {
+        const amt = parseFloat(document.getElementById('amount').value) || 0;
+        const type = document.getElementById('type').value;
+        const desc = document.getElementById('desc').value || "General entry";
+        
+        if(amt <= 0) return alert("Please enter amount");
 
-  if (mode === "daily") {
-    currentReportData = data.filter(d => new Date(d.date).toLocaleDateString() === todayStr);
-    currentTitle = "Daily Report (" + todayStr + ")";
-  } 
-  else if (mode === "weekly") {
-    const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
-    currentReportData = data.filter(d => new Date(d.date) >= weekAgo);
-    currentTitle = "Weekly Report (Last 7 Days)";
-  } 
-  else {
-    currentReportData = data.filter(d => {
-      const dDate = new Date(d.date);
-      return dDate.getMonth() === now.getMonth() && dDate.getFullYear() === now.getFullYear();
-    });
-    currentTitle = "Monthly Report (" + now.toLocaleString('default', { month: 'long' }) + ")";
-  }
+        db.push({
+            date: new Date().toISOString(),
+            stream: currentStream,
+            type: type,
+            amt: amt,
+            desc: desc
+        });
 
-  // Calculate Totals
-  let income = 0, expense = 0, classes = 0, learners = 0;
-  currentReportData.forEach(r => {
-    if(r.type === 'income') income += r.amount;
-    if(r.type === 'expense') expense += r.amount;
-    if(r.type === 'class') classes++;
-    if(r.type === 'learner') learners++;
-  });
+        localStorage.setItem('sisonke_v3_db', JSON.stringify(db));
+        alert("Saved successfully!");
+        document.getElementById('amount').value = "";
+        document.getElementById('desc').value = "";
+    }
 
-  // Show Text Preview
-  document.getElementById("output").value = 
-`📊 SISONKE EDUTECH
-${currentTitle}
----------------------------
-💰 Income:   R${income.toFixed(2)}
-💸 Expense:  R${expense.toFixed(2)}
-💵 Profit:   R${(income - expense).toFixed(2)}
----------------------------
-📚 Classes:  ${classes}
-🎓 New Students: ${learners}
----------------------------
-Generated: ${now.toLocaleString()}`;
-}
+    function runReport(period) {
+        const now = new Date();
+        currentReportTitle = period.toUpperCase() + " REPORT (" + now.toLocaleDateString() + ")";
+        
+        currentFilteredData = db.filter(item => {
+            const d = new Date(item.date);
+            if(period === 'daily') return d.toDateString() === now.toDateString();
+            if(period === 'weekly') {
+                const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
+                return d >= weekAgo;
+            }
+            if(period === 'monthly') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        });
 
-// 4. WHATSAPP COPY
-function copyWhatsApp() {
-  const txt = document.getElementById("output");
-  if(!txt.value) return alert("Please click a period button (e.g. 'Today') first.");
-  txt.select();
-  navigator.clipboard.writeText(txt.value);
-  alert("Copied! Paste into WhatsApp.");
-}
+        let s = `--- ${currentReportTitle} ---\n\n`;
+        let streams = { "Perfumes": 0, "Tutoring": 0, "CV Services": 0 };
+        let totalIn = 0; let totalOut = 0;
 
-// 5. PDF GENERATION (New Feature)
-function downloadPDF() {
-  if(currentReportData.length === 0) return alert("Generate a report first!");
-  
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  
-  // Header
-  doc.setFontSize(22);
-  doc.setTextColor(255, 153, 0); // Amazon Orange
-  doc.text("Sisonke Edutech", 14, 20);
-  
-  doc.setFontSize(14);
-  doc.setTextColor(40, 40, 40);
-  doc.text(currentTitle, 14, 30);
-  
-  // Summary from Text Area
-  const summary = document.getElementById("output").value;
-  doc.setFontSize(10);
-  doc.text("Summary Logic:", 14, 40);
-  
-  // Create Table of Transactions
-  const tableBody = currentReportData.map(d => [
-    new Date(d.date).toLocaleDateString(),
-    d.type.toUpperCase(),
-    d.note,
-    (d.type === 'income' || d.type === 'expense') ? "R" + d.amount.toFixed(2) : "-"
-  ]);
+        currentFilteredData.forEach(i => {
+            if(i.type === 'IN') { 
+                streams[i.stream] += i.amt; 
+                totalIn += i.amt; 
+            } else { 
+                streams[i.stream] -= i.amt; 
+                totalOut += i.amt; 
+            }
+        });
 
-  doc.autoTable({
-    startY: 45,
-    head: [['Date', 'Type', 'Description', 'Amount']],
-    body: tableBody,
-    theme: 'grid',
-    headStyles: { fillColor: [24, 119, 242] } // FB Blue
-  });
+        for(let key in streams) {
+            s += `${key}: ${format(streams[key])}\n`;
+        }
 
-  doc.save("Sisonke_Report.pdf");
-}
+        s += `\n*ALLOCATION BREAKDOWN (GROSS IN)*\n`;
+        s += `🙏 Tithe: ${format(totalIn * 0.1)}\n📢 Ads: ${format(totalIn * 0.3)}\n📦 Stock: ${format(totalIn * 0.1)}\n⚙️ Ops/Grow: ${format(totalIn * 0.5)}\n\n`;
+        s += `TOTAL PROFIT: ${format(totalIn - totalOut)}`;
+        
+        document.getElementById('reportOutput').value = s;
+    }
 
-function clearData() {
-  if(confirm("Delete ALL history?")) {
-    localStorage.removeItem("sisonkeData");
-    data = [];
-    document.getElementById("output").value = "";
-    alert("Data cleared.");
-  }
-}
+    function downloadPDF() {
+        if(currentFilteredData.length === 0) return alert("Generate a report first");
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        doc.setFontSize(20); doc.setTextColor(26, 115, 232);
+        doc.text("Sisonke Master Report", 14, 20);
+        doc.setFontSize(10); doc.setTextColor(100);
+        doc.text(currentReportTitle, 14, 28);
 
-// Initialize correct input state
-toggleAmount();
+        const tableBody = currentFilteredData.map(i => [
+            new Date(i.date).toLocaleDateString(),
+            i.stream,
+            i.type,
+            i.desc,
+            format(i.amt)
+        ]);
+
+        doc.autoTable({
+            startY: 35,
+            head: [['Date', 'Stream', 'Type', 'Description', 'Amount']],
+            body: tableBody,
+            headStyles: { fillColor: [26, 115, 232] }
+        });
+
+        // Add Summary box at bottom
+        const finalY = doc.lastAutoTable.finalY + 10;
+        doc.text("Report Summary available in text dashboard.", 14, finalY);
+
+        doc.save(`Sisonke_${currentReportTitle.replace(/ /g,"_")}.pdf`);
+    }
+
+    function copyWhatsApp() {
+        const t = document.getElementById('reportOutput').value;
+        if(!t) return alert("Generate report first");
+        navigator.clipboard.writeText(t);
+        alert("Copied to clipboard!");
+    }
+
+    function clearHistory() {
+        if(confirm("Delete all data?")) {
+            localStorage.removeItem('sisonke_v3_db');
+            db = [];
+            document.getElementById('reportOutput').value = "";
+        }
+    }
 </script>
-
 </body>
 </html>
