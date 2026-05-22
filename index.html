@@ -2,511 +2,526 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sisonke Edutech & Multi-Business Pro</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>Sisonke CV Vault | Premium Client Database</title>
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            /* Animated Gradient Colors */
-            --color1: #1A73E8; 
-            --color2: #E1306C; 
-            --color3: #F9AB00; 
-            --color4: #1E8E3E;
+        /* =========================================
+           CSS Reset & Premium Variables
+           ========================================= */
+        *, *::before, *::after { box-sizing: border-box; }
+        
+        :root { 
+            --g-blue: #4285F4;
+            --g-red: #EA4335;
+            --g-yellow: #FBBC05;
+            --g-green: #34A853;
             
-            /* Glass Variables */
-            --glass-bg: rgba(255, 255, 255, 0.15);
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-            --text-light: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.85);
-            
-            --radius: 16px;
+            --bg-color: #F8F9FA;
+            --text-main: #202124; 
+            --text-muted: #5F6368;
+            --glass-bg: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 8px 32px rgba(32, 33, 36, 0.08);
+            --shadow-hover: 0 12px 48px rgba(66, 133, 244, 0.15);
         }
-
-        /* Animated Vibrant Background */
+        
         body { 
-            font-family: 'Inter', sans-serif; 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            padding: 24px 16px; 
             margin: 0; 
-            padding: 20px 15px; 
-            min-height: 100vh;
-            background: linear-gradient(-45deg, var(--color1), var(--color2), var(--color3), var(--color4));
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: var(--text-light);
-            box-sizing: border-box;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        /* =========================================
+           Floating Background Blobs
+           ========================================= */
+        .blob-container {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
+        }
+        .blob {
+            position: absolute; filter: blur(90px); opacity: 0.5;
+            animation: float 12s infinite alternate ease-in-out;
+            border-radius: 50%;
+        }
+        .blob-1 { top: -10%; left: -10%; width: 40vw; height: 40vw; background: var(--g-blue); animation-delay: 0s; }
+        .blob-2 { bottom: -10%; right: -5%; width: 35vw; height: 35vw; background: var(--g-green); animation-delay: -2s; }
+        .blob-3 { top: 30%; left: 50%; width: 25vw; height: 25vw; background: var(--g-yellow); animation-delay: -4s; }
+        .blob-4 { bottom: 20%; left: -10%; width: 30vw; height: 30vw; background: var(--g-red); animation-delay: -6s; opacity: 0.3; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(5vw, 5vh) scale(1.1); }
+            100% { transform: translate(-3vw, -4vh) scale(0.95); }
         }
 
+        /* =========================================
+           Layout & Glassmorphism Cards
+           ========================================= */
         .container { 
-            max-width: 600px; 
-            margin: auto; 
-            width: 100%;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 2rem;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-
-        h1 { 
-            margin: 0 0 8px 0; 
-            font-size: clamp(1.8rem, 5vw, 2.5rem); 
-            font-weight: 700; 
-            letter-spacing: -0.5px;
+            width: 100%; max-width: 680px; margin: 0 auto; 
+            position: relative; z-index: 1;
         }
         
-        .subtitle { 
-            color: var(--text-dim); 
-            font-size: clamp(0.9rem, 3vw, 1.1rem);
-            font-weight: 300;
+        .header-section { 
+            text-align: center; margin-bottom: 32px; 
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border); border-radius: 24px;
+            padding: 24px 20px; box-shadow: var(--shadow-soft);
+            animation: slideUpFade 0.6s ease-out backwards;
         }
-
-        /* Glass Card Effect */
+        
+        .header-section h1 { 
+            margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+            background: linear-gradient(90deg, var(--g-blue), var(--g-red), var(--g-yellow), var(--g-green));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 300% 100%; animation: gradientPan 8s ease infinite;
+        }
+        
+        .header-section p { margin: 6px 0 0 0; color: var(--text-muted); font-size: 14px; font-weight: 500; }
+        
         .card { 
-            background: var(--glass-bg); 
-            border-radius: var(--radius); 
-            padding: clamp(15px, 5vw, 25px); 
-            margin-bottom: 20px; 
-            box-shadow: var(--glass-shadow); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 24px; 
+            padding: 28px 24px; margin-bottom: 24px; 
+            box-shadow: var(--shadow-soft); transition: transform 0.3s ease;
+            animation: slideUpFade 0.6s ease-out backwards;
         }
-
+        
         h2 { 
-            margin: 0 0 20px 0; 
-            font-size: 1.1rem; 
-            font-weight: 600; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            color: var(--text-main); margin: 0 0 20px 0; padding-bottom: 16px; 
+            font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 2px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 8px;
         }
         
-        label { 
-            display: block; 
-            font-size: 12px; 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: var(--text-dim); 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* =========================================
+           Upload Interactive Box
+           ========================================= */
+        .upload-box { 
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed rgba(66, 133, 244, 0.4); border-radius: 16px; 
+            padding: 32px 16px; text-align: center; cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden;
         }
-
-        /* Glossy Inputs */
-        select, input, textarea { 
-            width: 100%; 
-            padding: 14px; 
-            margin-bottom: 20px; 
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid var(--glass-border); 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-size: 16px; /* 16px prevents iOS zoom */
-            font-family: inherit;
-            color: #fff;
-            transition: all 0.3s ease;
+        .upload-box:hover { 
+            border-color: var(--g-blue); background: rgba(66, 133, 244, 0.05);
+            transform: translateY(-2px); box-shadow: 0 8px 20px rgba(66, 133, 244, 0.1);
         }
-
-        select option {
-            background: #202124; /* Solid background for mobile dropdown legibility */
-            color: #fff;
-        }
-
-        input::placeholder, textarea::placeholder {
-            color: rgba(255, 255, 255, 0.6);
-        }
-
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #fff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.2);
-        }
+        .upload-box h3 { margin: 0; color: var(--g-blue); font-size: 16px; font-weight: 700; }
+        .upload-box p { margin: 8px 0 0 0; font-size: 13px; color: var(--text-muted); font-weight: 500;}
+        .upload-icon { width: 32px; height: 32px; margin-bottom: 12px; fill: url(#blue-grad); }
+        input[type="file"] { display: none; }
         
-        .stream-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
-            gap: 10px; 
-            margin-bottom: 20px; 
-        }
-
-        .stream-btn { 
-            font-size: 13px; 
-            padding: 14px 10px; 
-            border-radius: 12px; 
-            border: 1px solid var(--glass-border); 
-            background: rgba(255,255,255,0.05);
-            color: var(--text-dim); 
-            cursor: pointer; 
-            font-weight: 600; 
+        /* =========================================
+           Forms & Neumorphic Inputs
+           ========================================= */
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 28px; }
+        label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        input[type="text"], textarea { 
+            width: 100%; padding: 14px 16px; font-family: 'Poppins', sans-serif; font-size: 14px; font-weight: 500;
+            background: rgba(255, 255, 255, 0.8); color: var(--text-main);
+            border: 2px solid transparent; border-radius: 12px; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02), 0 2px 8px rgba(0,0,0,0.02);
             transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
         }
-
-        .stream-btn.active { 
-            background: rgba(255,255,255,0.3); 
-            color: #fff; 
-            border-color: #fff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        input:focus, textarea:focus { 
+            outline: none; background: #FFF; border-color: var(--g-blue); 
+            box-shadow: 0 0 0 4px rgba(66, 133, 244, 0.15); transform: translateY(-1px);
         }
-
-        /* Glassy Allocation Box */
-        .allocation-box { 
-            background: rgba(0, 0, 0, 0.2); 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .alloc-row { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 14px; 
-            padding: 6px 0; 
-        }
-
-        .alloc-row b { 
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .alloc-total {
-            border-top: 1px solid rgba(255,255,255,0.2); 
-            margin-top: 8px; 
-            padding-top: 12px; 
-        }
-
-        .btn-group { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            gap: 10px; 
-            margin-bottom: 20px; 
-        }
-
+        input::placeholder, textarea::placeholder { color: #9AA0A6; font-weight: 400; }
+        
+        /* Primary Button */
         .btn { 
-            width: 100%; 
-            padding: 16px; 
-            border: none; 
-            border-radius: 12px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            font-size: 14px; 
-            transition: all 0.3s ease;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
+            width: 100%; padding: 16px; margin-top: 32px; 
+            background: linear-gradient(135deg, var(--g-blue), #2b6ce0);
+            color: white; border: none; border-radius: 12px; 
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 15px; letter-spacing: 0.5px;
+            cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
         }
-
-        .btn:active { transform: scale(0.98); }
-
-        .btn-save { 
-            background: rgba(255, 255, 255, 0.25); 
-            color: #fff; 
-            border: 1px solid rgba(255,255,255,0.5);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(66, 133, 244, 0.45); }
+        
+        /* Data Action Buttons (Import/Export) */
+        .action-buttons {
+            display: flex; gap: 12px; flex-direction: column; margin-bottom: 20px;
         }
-
-        .btn-save:hover { background: rgba(255, 255, 255, 0.35); }
-
-        .btn-period { 
-            background: rgba(0, 0, 0, 0.3); 
-            color: #fff; 
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 12px;
-            font-size: 12px;
+        
+        .btn-outline {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px; border-radius: 12px;
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 14px;
+            cursor: pointer; transition: all 0.2s ease; border: 2px solid;
         }
+        
+        .btn-export { background: rgba(52, 168, 83, 0.1); color: var(--g-green); border-color: rgba(52, 168, 83, 0.3); }
+        .btn-export:hover { background: var(--g-green); color: white; box-shadow: 0 4px 15px rgba(52, 168, 83, 0.3); }
+        
+        .btn-import { background: rgba(66, 133, 244, 0.1); color: var(--g-blue); border-color: rgba(66, 133, 244, 0.3); }
+        .btn-import:hover { background: var(--g-blue); color: white; box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3); }
 
-        .btn-period:hover, .btn-period:focus {
-            background: rgba(255,255,255,0.2);
-            border-color: #fff;
+        /* =========================================
+           Database List (Premium Cards)
+           ========================================= */
+        .client-item { 
+            background: #FFFFFF; border: 1px solid rgba(0,0,0,0.04); border-radius: 16px; 
+            padding: 20px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: all 0.3s ease;
+            position: relative; overflow: hidden;
         }
-
-        .action-btns {
-            display: flex; 
-            flex-direction: column;
-            gap: 10px; 
-            margin-top: 10px;
+        .client-item:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); border-color: rgba(66,133,244,0.2); }
+        .client-item::before {
+            content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px;
+            background: linear-gradient(to bottom, var(--g-blue), var(--g-green)); border-radius: 4px 0 0 4px;
         }
-
-        .btn-wa { background: rgba(37, 211, 102, 0.8); color: white; }
-        .btn-pdf { background: rgba(225, 48, 108, 0.8); color: white; }
-
-        .btn-reset {
-            background: transparent;
-            color: rgba(255,255,255,0.6);
-            font-size: 12px;
-            margin-top: 20px;
-            text-decoration: underline;
-            padding: 8px;
-            width: auto;
-            margin-left: auto;
-            margin-right: auto;
+        
+        .client-info { width: 100%; padding-left: 8px; }
+        .client-info h4 { margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: var(--text-main); }
+        .client-info p { margin: 0 0 8px 0; font-size: 13px; color: var(--text-muted); font-weight: 500; word-break: break-word; }
+        .client-skills { font-size: 12px; font-weight: 600; color: var(--g-blue); background: rgba(66,133,244,0.1); padding: 6px 12px; border-radius: 20px; display: inline-block;}
+        
+        .btn-del { 
+            width: 100%; background: rgba(234, 67, 53, 0.05); color: var(--g-red); 
+            border: 1px solid rgba(234, 67, 53, 0.2); border-radius: 8px; 
+            padding: 10px 16px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600; font-size: 13px; 
+            transition: all 0.2s; text-align: center;
         }
+        .btn-del:hover { background: var(--g-red); color: white; border-color: var(--g-red); box-shadow: 0 4px 12px rgba(234, 67, 53, 0.3); }
+        .empty-state { text-align: center; color: var(--text-muted); font-size: 14px; font-weight: 500; padding: 32px 0; }
 
-        #reportOutput { 
-            background: rgba(0, 0, 0, 0.4); 
-            color: #4ade80; 
-            font-family: 'Courier New', monospace; 
-            font-size: 13px; 
-            line-height: 1.5;
-            resize: vertical;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
-        }
+        @keyframes slideUpFade { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+        @keyframes gradientPan { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        .input-row { display: flex; gap: 15px; }
-        .input-row > div { flex: 1; }
-
-        /* Mobile specific adjustments */
-        @media (max-width: 500px) {
-            .input-row { flex-direction: column; gap: 0; }
-            .action-btns { flex-direction: column; }
-            .btn-group { grid-template-columns: 1fr; gap: 8px; }
+        /* Responsive Breakpoints */
+        @media (min-width: 650px) {
+            body { padding: 40px 20px; }
+            .header-section { padding: 32px; border-radius: 100px; } 
+            .header-section h1 { font-size: 32px; }
+            .card { padding: 40px; border-radius: 32px; }
+            .upload-box { padding: 48px 24px; }
+            .form-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+            .full-width { grid-column: span 2; }
+            .client-item { flex-direction: row; justify-content: space-between; align-items: center; }
+            .btn-del { width: auto; }
+            .hub-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(0,0,0,0.04); margin-bottom: 20px; padding-bottom: 16px; }
+            .hub-header h2 { border-bottom: none; margin: 0; padding-bottom: 0; }
+            .action-buttons { flex-direction: row; margin-bottom: 0; }
+            .btn-outline { width: auto; padding: 10px 20px; }
         }
     </style>
 </head>
 <body>
 
+<!-- Animated Abstract Background -->
+<div class="blob-container">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="blob blob-4"></div>
+</div>
+
 <div class="container">
-    <div class="header">
-        <h1>Sisonke Pro</h1>
-        <div class="subtitle">Perfumes | Tutoring | CV Services</div>
+    <!-- SVGs for styling -->
+    <svg width="0" height="0">
+        <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop stop-color="#4285F4" offset="0%" />
+            <stop stop-color="#34A853" offset="100%" />
+        </linearGradient>
+    </svg>
+
+    <!-- Header Glass Navbar -->
+    <div class="header-section">
+        <h1>Sisonke CV Vault</h1>
+        <p>Premium Extraction & Resource Management</p>
     </div>
 
+    <!-- Data Entry Card -->
     <div class="card">
-        <h2>Record Transaction</h2>
-        
-        <label>Business Stream</label>
-        <div class="stream-grid">
-            <button class="stream-btn active" id="btn-perfume" onclick="setStream('Perfumes')">🌸 Perfume</button>
-            <button class="stream-btn" id="btn-tutoring" onclick="setStream('Tutoring')">📚 Tutoring</button>
-            <button class="stream-btn" id="btn-cv" onclick="setStream('CV Services')">📄 CVs</button>
+        <h2>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--g-blue)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            Data Ingestion
+        </h2>
+        <div class="upload-box" onclick="document.getElementById('cvInput').click()">
+            <svg class="upload-icon" focusable="false" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"></path>
+            </svg>
+            <h3 id="uploadTitle">Select Document (PDF)</h3>
+            <p id="uploadStatus">System will automatically map contact details and proficiencies.</p>
         </div>
+        <input type="file" id="cvInput" accept="application/pdf">
 
-        <div class="input-row">
-            <div>
-                <label>Flow</label>
-                <select id="type" onchange="updateUI()">
-                    <option value="IN">💰 Money In</option>
-                    <option value="OUT">💸 Money Out</option>
-                </select>
+        <div class="form-grid">
+            <div class="full-width">
+                <label>Candidate Name</label>
+                <input type="text" id="clientName" placeholder="Auto-extracted or enter manually">
             </div>
             <div>
-                <label>Amount (ZAR)</label>
-                <input type="number" id="amount" placeholder="0.00" inputmode="decimal" oninput="calculateSplits()">
+                <label>Email Address</label>
+                <input type="text" id="clientEmail" placeholder="e.g., candidate@domain.com">
+            </div>
+            <div>
+                <label>Contact Number</label>
+                <input type="text" id="clientPhone" placeholder="e.g., 071 234 5678">
+            </div>
+            <div class="full-width">
+                <label>Detected Proficiencies</label>
+                <textarea id="clientSkills" rows="2" placeholder="Extracted intelligence will appear here..."></textarea>
             </div>
         </div>
 
-        <div id="allocDisplay" class="allocation-box">
-            <div class="alloc-row">Tithe (10%) <b id="a-tithe">R0.00</b></div>
-            <div class="alloc-row">Ads/Marketing (30%) <b id="a-ads">R0.00</b></div>
-            <div class="alloc-row">Stock Reserve (10%) <b id="a-stock">R0.00</b></div>
-            <div class="alloc-row alloc-total">Ops/Save/Grow (50%) <b id="a-other">R0.00</b></div>
-        </div>
-
-        <label>Description</label>
-        <input type="text" id="desc" placeholder="e.g. Sales for 3x Perfumes">
-
-        <button class="btn btn-save" onclick="saveData()">Save Transaction 💾</button>
+        <button class="btn" id="btnSave">Save Intelligence Record</button>
     </div>
 
+    <!-- Database Card -->
     <div class="card">
-        <h2>Generated Reports</h2>
-        <div class="btn-group">
-            <button class="btn btn-period" onclick="runReport('daily')">TODAY</button>
-            <button class="btn btn-period" onclick="runReport('weekly')">WEEKLY</button>
-            <button class="btn btn-period" onclick="runReport('monthly')">MONTHLY</button>
+        <div class="hub-header">
+            <h2>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--g-green)"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                Intelligence Hub
+            </h2>
+            
+            <div class="action-buttons">
+                <!-- Import Button -->
+                <button class="btn-outline btn-import" onclick="document.getElementById('csvImportInput').click()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 13 7 8"></polyline><line x1="12" y1="13" x2="12" y2="3"></line></svg>
+                    Import Data
+                </button>
+                <input type="file" id="csvImportInput" accept=".csv">
+
+                <!-- Export Button -->
+                <button class="btn-outline btn-export" id="btnExportCSV">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    Export CSV
+                </button>
+            </div>
         </div>
         
-        <textarea id="reportOutput" rows="8" readonly placeholder="Select a period above to view your report..."></textarea>
-        
-        <div class="action-btns">
-            <button class="btn btn-wa" onclick="copyWhatsApp()">📲 Share via WhatsApp</button>
-            <button class="btn btn-pdf" onclick="downloadPDF()">📄 Export PDF</button>
-        </div>
-        
-        <div style="text-align: center;">
-            <button class="btn btn-reset" onclick="clearHistory()">Reset All Data</button>
+        <div id="databaseList">
+            <!-- Client list will generate here -->
         </div>
     </div>
 </div>
 
 <script>
-    let db = JSON.parse(localStorage.getItem('sisonke_v3_db')) || [];
-    let currentStream = 'Perfumes';
-    let currentFilteredData = [];
-    let currentReportTitle = "";
+    // 1. Setup PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-    function setStream(val) {
-        currentStream = val;
-        document.querySelectorAll('.stream-btn').forEach(b => b.classList.remove('active'));
-        if(val === 'Perfumes') document.getElementById('btn-perfume').classList.add('active');
-        if(val === 'Tutoring') document.getElementById('btn-tutoring').classList.add('active');
-        if(val === 'CV Services') document.getElementById('btn-cv').classList.add('active');
-    }
+    // 2. Keywords
+    const skillKeywords = ["Administration", "Data Entry", "Customer Service", "IT Support", "Hardware", "Networking", "CompTIA", "Sales", "Marketing", "Management", "Teaching", "Tutoring", "Microsoft Office", "Excel", "Project Management", "Logistics", "Programming", "Python", "HTML", "CSS", "Accounting"];
 
-    function format(v) {
-        return "R" + parseFloat(v || 0).toLocaleString('en-ZA', {minimumFractionDigits: 2});
-    }
+    // 3. Load DB
+    let cvDb = JSON.parse(localStorage.getItem('sisonke_clients_db_saas')) || [];
+    renderDatabase();
 
-    function updateUI() {
-        const type = document.getElementById('type').value;
-        document.getElementById('allocDisplay').style.display = (type === 'IN') ? 'block' : 'none';
-    }
+    // 4. PDF File Upload Logic
+    document.getElementById('cvInput').addEventListener('change', async function(e) {
+        const file = e.target.files[0];
+        if (!file || file.type !== "application/pdf") return alert("Please upload a valid PDF document.");
 
-    function calculateSplits() {
-        const amt = parseFloat(document.getElementById('amount').value) || 0;
-        document.getElementById('a-tithe').innerText = format(amt * 0.1);
-        document.getElementById('a-ads').innerText = format(amt * 0.3);
-        document.getElementById('a-stock').innerText = format(amt * 0.1);
-        document.getElementById('a-other').innerText = format(amt * 0.5);
-    }
+        document.getElementById('uploadTitle').innerText = "Processing Data...";
+        document.getElementById('uploadStatus').innerText = "Running AI mapping algorithm...";
 
-    function saveData() {
-        const amt = parseFloat(document.getElementById('amount').value) || 0;
-        const type = document.getElementById('type').value;
-        const desc = document.getElementById('desc').value || "General entry";
-        
-        if(amt <= 0) return alert("Please enter a valid amount.");
+        try {
+            const fileBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(fileBuffer).promise;
+            let fullText = "";
 
-        db.push({
-            date: new Date().toISOString(),
-            stream: currentStream,
-            type: type,
-            amt: amt,
-            desc: desc
-        });
-
-        localStorage.setItem('sisonke_v3_db', JSON.stringify(db));
-        
-        // Visual feedback
-        const btn = document.querySelector('.btn-save');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = "✓ Saved";
-        btn.style.background = "rgba(46, 204, 113, 0.8)";
-        btn.style.borderColor = "#2ecc71";
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.style.background = "rgba(255, 255, 255, 0.25)";
-            btn.style.borderColor = "rgba(255,255,255,0.5)";
-        }, 2000);
-
-        document.getElementById('amount').value = "";
-        document.getElementById('desc').value = "";
-        calculateSplits();
-    }
-
-    function runReport(period) {
-        const now = new Date();
-        currentReportTitle = period.toUpperCase() + " REPORT (" + now.toLocaleDateString() + ")";
-        
-        currentFilteredData = db.filter(item => {
-            const d = new Date(item.date);
-            if(period === 'daily') return d.toDateString() === now.toDateString();
-            if(period === 'weekly') {
-                const weekAgo = new Date(); weekAgo.setDate(now.getDate() - 7);
-                return d >= weekAgo;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                fullText += textContent.items.map(item => item.str).join(" ") + " ";
             }
-            if(period === 'monthly') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+
+            autoPopulateFields(fullText);
+            document.getElementById('uploadTitle').innerText = "Mapping Complete";
+            document.getElementById('uploadStatus').innerText = "Data ingested. Please review before persisting to database.";
+            
+        } catch (error) {
+            document.getElementById('uploadTitle').innerText = "Extraction Failed";
+            document.getElementById('uploadStatus').innerText = "Unable to parse PDF data. Manual entry required.";
+        }
+    });
+
+    // 5. Populate Fields
+    function autoPopulateFields(text) {
+        const emailMatch = text.match(/[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+/i);
+        document.getElementById('clientEmail').value = emailMatch ? emailMatch[0] : "";
+
+        const phoneMatch = text.match(/(?:\+27|0)[6-8][0-9\s-]{8,10}/);
+        document.getElementById('clientPhone').value = phoneMatch ? phoneMatch[0].trim() : "";
+
+        let foundSkills = [];
+        skillKeywords.forEach(skill => {
+            if (new RegExp("\\b" + skill + "\\b", "i").test(text)) foundSkills.push(skill);
         });
+        document.getElementById('clientSkills').value = foundSkills.join(", ");
 
-        let s = `✦ ${currentReportTitle} ✦\n\n`;
-        let streams = { "Perfumes": 0, "Tutoring": 0, "CV Services": 0 };
-        let totalIn = 0; let totalOut = 0;
+        const possibleName = text.substring(0, 30).replace(/[^a-zA-Z\s]/g, "").trim();
+        document.getElementById('clientName').value = possibleName;
+    }
 
-        currentFilteredData.forEach(i => {
-            if(i.type === 'IN') { 
-                streams[i.stream] += i.amt; 
-                totalIn += i.amt; 
-            } else { 
-                streams[i.stream] -= i.amt; 
-                totalOut += i.amt; 
-            }
-        });
+    // 6. Save Logic
+    document.getElementById('btnSave').addEventListener('click', () => {
+        const name = document.getElementById('clientName').value.trim();
+        if (!name) return alert("Validation Error: Candidate Name is required.");
 
-        s += `[ REVENUE BY STREAM ]\n`;
-        for(let key in streams) {
-            s += `${key}: ${format(streams[key])}\n`;
+        const newClient = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' }),
+            name: name,
+            email: document.getElementById('clientEmail').value || "Not provided",
+            phone: document.getElementById('clientPhone').value || "Not provided",
+            skills: document.getElementById('clientSkills').value || "None mapped"
+        };
+
+        cvDb.push(newClient);
+        localStorage.setItem('sisonke_clients_db_saas', JSON.stringify(cvDb));
+        
+        document.getElementById('clientName').value = "";
+        document.getElementById('clientEmail').value = "";
+        document.getElementById('clientPhone').value = "";
+        document.getElementById('clientSkills').value = "";
+        document.getElementById('cvInput').value = "";
+        
+        document.getElementById('uploadTitle').innerText = "Select Document (PDF)";
+        document.getElementById('uploadStatus').innerText = "System will automatically map contact details and proficiencies.";
+        renderDatabase();
+    });
+
+    // 7. Render Database
+    function renderDatabase() {
+        const list = document.getElementById('databaseList');
+        if (cvDb.length === 0) {
+            list.innerHTML = "<div class='empty-state'>No intelligence records found in the hub.</div>";
+            return;
         }
 
-        s += `\n[ ALLOCATIONS (GROSS IN) ]\n`;
-        s += `Tithe: ${format(totalIn * 0.1)}\nAds & Mkt: ${format(totalIn * 0.3)}\nStock: ${format(totalIn * 0.1)}\nOps/Grow: ${format(totalIn * 0.5)}\n\n`;
-        s += `------------------------\n`;
-        s += `TOTAL PROFIT: ${format(totalIn - totalOut)}`;
-        
-        document.getElementById('reportOutput').value = s;
+        list.innerHTML = [...cvDb].reverse().map(client => `
+            <div class="client-item">
+                <div class="client-info">
+                    <h4>${client.name}</h4>
+                    <p>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:-1px;"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        ${client.phone} &nbsp;|&nbsp; 
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px; vertical-align:-1px;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        ${client.email}
+                    </p>
+                    <div class="client-skills">${client.skills}</div>
+                    <p style="color:#9AA0A6; margin-top:10px; font-size:11px; font-weight:600;">Ingested: ${client.date}</p>
+                </div>
+                <button class="btn-del" onclick="deleteClient(${client.id})">Delete</button>
+            </div>
+        `).join('');
     }
 
-    function downloadPDF() {
-        if(currentFilteredData.length === 0) return alert("Please generate a report first.");
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        doc.setFontSize(22); 
-        doc.setTextColor(26, 115, 232);
-        doc.text("Sisonke Edutech Master Report", 14, 20);
-        
-        doc.setFontSize(11); 
-        doc.setTextColor(100);
-        doc.text(currentReportTitle, 14, 28);
-
-        const tableBody = currentFilteredData.map(i => [
-            new Date(i.date).toLocaleDateString(),
-            i.stream,
-            i.type,
-            i.desc,
-            format(i.amt)
-        ]);
-
-        doc.autoTable({
-            startY: 35,
-            head: [['Date', 'Stream', 'Type', 'Description', 'Amount']],
-            body: tableBody,
-            headStyles: { fillColor: [26, 115, 232], textColor: [255,255,255] },
-            alternateRowStyles: { fillColor: [240, 245, 255] },
-            styles: { font: 'helvetica', fontSize: 10 }
-        });
-
-        const finalY = doc.lastAutoTable.finalY + 15;
-        doc.setFontSize(10);
-        doc.text("Report Summary available in your web dashboard.", 14, finalY);
-
-        doc.save(`Sisonke_${currentReportTitle.replace(/ /g,"_")}.pdf`);
-    }
-
-    function copyWhatsApp() {
-        const t = document.getElementById('reportOutput').value;
-        if(!t) return alert("Please generate a report first.");
-        navigator.clipboard.writeText(t);
-        alert("Report copied to clipboard! Ready to paste in WhatsApp.");
-    }
-
-    function clearHistory() {
-        if(confirm("Are you sure you want to permanently delete all data?")) {
-            localStorage.removeItem('sisonke_v3_db');
-            db = [];
-            document.getElementById('reportOutput').value = "";
-            alert("Data reset.");
+    // 8. Delete Logic
+    window.deleteClient = function(id) {
+        if (confirm("Confirm permanent deletion of this intelligence record?")) {
+            cvDb = cvDb.filter(client => client.id !== id);
+            localStorage.setItem('sisonke_clients_db_saas', JSON.stringify(cvDb));
+            renderDatabase();
         }
-    }
+    };
+
+    // 9. CSV Export Logic
+    document.getElementById('btnExportCSV').addEventListener('click', () => {
+        if (cvDb.length === 0) return alert("The database is currently empty.");
+        
+        const headers = ["Candidate ID", "Date Ingested", "Candidate Name", "Email Address", "Contact Number", "Mapped Skills"];
+        
+        const rows = cvDb.map(client => {
+            const name = `"${(client.name || '').replace(/"/g, '""')}"`;
+            const email = `"${(client.email || '').replace(/"/g, '""')}"`;
+            const phone = `"${(client.phone || '').replace(/"/g, '""')}"`;
+            const skills = `"${(client.skills || '').replace(/"/g, '""')}"`;
+            return [client.id, client.date, name, email, phone, skills].join(",");
+        });
+        
+        const csvContent = [headers.join(","), ...rows].join("\n");
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Sisonke_CV_Database_${new Date().toISOString().split('T')[0]}.csv`);
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    // 10. CSV Import / Restore Logic
+    document.getElementById('csvImportInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Ensure it is a CSV file
+        if (!file.name.endsWith('.csv')) {
+            alert("System Error: Please upload a valid CSV backup file.");
+            this.value = ''; // Reset input
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const text = event.target.result;
+            // Split by newlines, ignoring empty lines
+            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+            
+            if (lines.length <= 1) {
+                alert("The uploaded file appears to be empty or contains no records.");
+                return;
+            }
+
+            let importedCount = 0;
+            // Extract existing IDs to prevent duplicates during merge
+            const existingIds = new Set(cvDb.map(client => String(client.id)));
+
+            // Loop starting from row 1 (skipping headers)
+            for (let i = 1; i < lines.length; i++) {
+                // Regex: Split by commas ONLY if they are outside of double quotes
+                const row = lines[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                
+                if (row.length >= 6) {
+                    const parsedId = row[0].replace(/^"|"$/g, '');
+                    
+                    // Only import if the ID doesn't already exist in the database
+                    if (!existingIds.has(parsedId)) {
+                        cvDb.push({
+                            id: parseInt(parsedId) || Date.now() + i, // Fallback ID if missing
+                            date: row[1].replace(/^"|"$/g, ''),
+                            name: row[2].replace(/^"|"$/g, '').replace(/""/g, '"'),
+                            email: row[3].replace(/^"|"$/g, '').replace(/""/g, '"'),
+                            phone: row[4].replace(/^"|"$/g, '').replace(/""/g, '"'),
+                            skills: row[5].replace(/^"|"$/g, '').replace(/""/g, '"')
+                        });
+                        importedCount++;
+                    }
+                }
+            }
+
+            if (importedCount > 0) {
+                localStorage.setItem('sisonke_clients_db_saas', JSON.stringify(cvDb));
+                renderDatabase();
+                alert(`Data Restoration Complete. Successfully imported ${importedCount} new records.`);
+            } else {
+                alert("No new records found. All data in the file already exists in your hub.");
+            }
+        };
+        
+        reader.readAsText(file);
+        this.value = ''; // Reset input so the same file can be uploaded again if needed
+    });
 </script>
 </body>
 </html>
