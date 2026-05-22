@@ -6,99 +6,345 @@
     <title>Sisonke Edutech & Multi-Business Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #1A73E8; --perfume: #E1306C; --tutoring: #F9AB00; --cv: #1E8E3E;
-            --bg: #F1F3F4; --card: #FFFFFF; --text: #202124;
+            /* Animated Gradient Colors */
+            --color1: #1A73E8; 
+            --color2: #E1306C; 
+            --color3: #F9AB00; 
+            --color4: #1E8E3E;
+            
+            /* Glass Variables */
+            --glass-bg: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+            --text-light: #ffffff;
+            --text-dim: rgba(255, 255, 255, 0.85);
+            
+            --radius: 16px;
         }
-        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 12px; }
-        .container { max-width: 550px; margin: auto; }
-        .card { background: var(--card); border-radius: 12px; padding: 18px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.12); }
-        h2 { margin: 0 0 15px 0; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; color: var(--primary); border-bottom: 1px solid #eee; padding-bottom: 8px; }
+
+        /* Animated Vibrant Background */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            margin: 0; 
+            padding: 20px 15px; 
+            min-height: 100vh;
+            background: linear-gradient(-45deg, var(--color1), var(--color2), var(--color3), var(--color4));
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-light);
+            box-sizing: border-box;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        h1 { 
+            margin: 0 0 8px 0; 
+            font-size: clamp(1.8rem, 5vw, 2.5rem); 
+            font-weight: 700; 
+            letter-spacing: -0.5px;
+        }
         
-        label { display: block; font-size: 11px; font-weight: 700; margin-bottom: 5px; color: #5f6368; }
-        select, input, textarea { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #dadce0; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .subtitle { 
+            color: var(--text-dim); 
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            font-weight: 300;
+        }
+
+        /* Glass Card Effect */
+        .card { 
+            background: var(--glass-bg); 
+            border-radius: var(--radius); 
+            padding: clamp(15px, 5vw, 25px); 
+            margin-bottom: 20px; 
+            box-shadow: var(--glass-shadow); 
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+        }
+
+        h2 { 
+            margin: 0 0 20px 0; 
+            font-size: 1.1rem; 
+            font-weight: 600; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 10px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
         
-        .stream-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-bottom: 15px; }
-        .stream-btn { font-size: 10px; padding: 8px; border-radius: 6px; border: none; color: white; cursor: pointer; opacity: 0.6; font-weight: bold; }
-        .stream-btn.active { opacity: 1; transform: scale(1.05); }
+        label { 
+            display: block; 
+            font-size: 12px; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: var(--text-dim); 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-        .allocation-box { background: #f8f9fa; padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); margin-bottom: 15px; }
-        .alloc-row { display: flex; justify-content: space-between; font-size: 12px; padding: 3px 0; }
-        .alloc-row b { color: var(--primary); }
+        /* Glossy Inputs */
+        select, input, textarea { 
+            width: 100%; 
+            padding: 14px; 
+            margin-bottom: 20px; 
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border); 
+            border-radius: 12px; 
+            box-sizing: border-box; 
+            font-size: 16px; /* 16px prevents iOS zoom */
+            font-family: inherit;
+            color: #fff;
+            transition: all 0.3s ease;
+        }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .btn-save { background: var(--primary); color: white; margin-top: 5px; }
-        .btn-pdf { background: #E1306C; color: white; }
-        .btn-wa { background: #25D366; color: white; }
-        .btn-period { background: #3c4043; color: white; padding: 10px; }
+        select option {
+            background: #202124; /* Solid background for mobile dropdown legibility */
+            color: #fff;
+        }
 
-        #reportOutput { background: #202124; color: #00FF41; font-family: monospace; font-size: 12px; }
-        .hidden { display: none; }
+        input::placeholder, textarea::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        
+        .stream-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+
+        .stream-btn { 
+            font-size: 13px; 
+            padding: 14px 10px; 
+            border-radius: 12px; 
+            border: 1px solid var(--glass-border); 
+            background: rgba(255,255,255,0.05);
+            color: var(--text-dim); 
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .stream-btn.active { 
+            background: rgba(255,255,255,0.3); 
+            color: #fff; 
+            border-color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Glassy Allocation Box */
+        .allocation-box { 
+            background: rgba(0, 0, 0, 0.2); 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .alloc-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            padding: 6px 0; 
+        }
+
+        .alloc-row b { 
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .alloc-total {
+            border-top: 1px solid rgba(255,255,255,0.2); 
+            margin-top: 8px; 
+            padding-top: 12px; 
+        }
+
+        .btn-group { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin-bottom: 20px; 
+        }
+
+        .btn { 
+            width: 100%; 
+            padding: 16px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            font-size: 14px; 
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active { transform: scale(0.98); }
+
+        .btn-save { 
+            background: rgba(255, 255, 255, 0.25); 
+            color: #fff; 
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-save:hover { background: rgba(255, 255, 255, 0.35); }
+
+        .btn-period { 
+            background: rgba(0, 0, 0, 0.3); 
+            color: #fff; 
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 12px;
+            font-size: 12px;
+        }
+
+        .btn-period:hover, .btn-period:focus {
+            background: rgba(255,255,255,0.2);
+            border-color: #fff;
+        }
+
+        .action-btns {
+            display: flex; 
+            flex-direction: column;
+            gap: 10px; 
+            margin-top: 10px;
+        }
+
+        .btn-wa { background: rgba(37, 211, 102, 0.8); color: white; }
+        .btn-pdf { background: rgba(225, 48, 108, 0.8); color: white; }
+
+        .btn-reset {
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            margin-top: 20px;
+            text-decoration: underline;
+            padding: 8px;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #reportOutput { 
+            background: rgba(0, 0, 0, 0.4); 
+            color: #4ade80; 
+            font-family: 'Courier New', monospace; 
+            font-size: 13px; 
+            line-height: 1.5;
+            resize: vertical;
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 15px;
+        }
+
+        .input-row { display: flex; gap: 15px; }
+        .input-row > div { flex: 1; }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 500px) {
+            .input-row { flex-direction: column; gap: 0; }
+            .action-btns { flex-direction: column; }
+            .btn-group { grid-template-columns: 1fr; gap: 8px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div style="text-align: center; margin-bottom: 15px;">
-        <h1 style="margin:0; font-size: 22px;">Sisonke Edutech Pro</h1>
-        <small style="color: #5f6368;">Perfumes | Tutoring | CV Services</small>
+    <div class="header">
+        <h1>Sisonke Pro</h1>
+        <div class="subtitle">Perfumes | Tutoring | CV Services</div>
     </div>
 
     <div class="card">
-        <h2>➕ Add Transaction</h2>
+        <h2>Record Transaction</h2>
         
-        <label>BUSINESS STREAM</label>
+        <label>Business Stream</label>
         <div class="stream-grid">
-            <button class="stream-btn active" id="btn-perfume" style="background: var(--perfume);" onclick="setStream('Perfumes')">🌸 PERFUME</button>
-            <button class="stream-btn" id="btn-tutoring" style="background: var(--tutoring);" onclick="setStream('Tutoring')">📚 TUTORING</button>
-            <button class="stream-btn" id="btn-cv" style="background: var(--cv);" onclick="setStream('CV Services')">📄 CVs</button>
+            <button class="stream-btn active" id="btn-perfume" onclick="setStream('Perfumes')">🌸 Perfume</button>
+            <button class="stream-btn" id="btn-tutoring" onclick="setStream('Tutoring')">📚 Tutoring</button>
+            <button class="stream-btn" id="btn-cv" onclick="setStream('CV Services')">📄 CVs</button>
         </div>
 
-        <div style="display: flex; gap: 10px;">
-            <div style="flex: 1;">
-                <label>TYPE</label>
+        <div class="input-row">
+            <div>
+                <label>Flow</label>
                 <select id="type" onchange="updateUI()">
                     <option value="IN">💰 Money In</option>
                     <option value="OUT">💸 Money Out</option>
                 </select>
             </div>
-            <div style="flex: 1;">
-                <label>AMOUNT (ZAR)</label>
-                <input type="number" id="amount" placeholder="0.00" oninput="calculateSplits()">
+            <div>
+                <label>Amount (ZAR)</label>
+                <input type="number" id="amount" placeholder="0.00" inputmode="decimal" oninput="calculateSplits()">
             </div>
         </div>
 
         <div id="allocDisplay" class="allocation-box">
-            <div class="alloc-row">Tithe (10%): <b id="a-tithe">R0.00</b></div>
-            <div class="alloc-row">Ads/Mkt (30%): <b id="a-ads">R0.00</b></div>
-            <div class="alloc-row">Stock Reserve (10%): <b id="a-stock">R0.00</b></div>
-            <div class="alloc-row" style="border-top: 1px solid #ddd; margin-top: 5px; padding-top: 5px;">Ops/Save/Grow (50%): <b id="a-other">R0.00</b></div>
+            <div class="alloc-row">Tithe (10%) <b id="a-tithe">R0.00</b></div>
+            <div class="alloc-row">Ads/Marketing (30%) <b id="a-ads">R0.00</b></div>
+            <div class="alloc-row">Stock Reserve (10%) <b id="a-stock">R0.00</b></div>
+            <div class="alloc-row alloc-total">Ops/Save/Grow (50%) <b id="a-other">R0.00</b></div>
         </div>
 
-        <label>NOTE / DESCRIPTION</label>
+        <label>Description</label>
         <input type="text" id="desc" placeholder="e.g. Sales for 3x Perfumes">
 
-        <button class="btn btn-save" onclick="saveData()">SAVE TO DATABASE</button>
+        <button class="btn btn-save" onclick="saveData()">Save Transaction 💾</button>
     </div>
 
     <div class="card">
-        <h2>📑 Generate PDF Report</h2>
+        <h2>Generated Reports</h2>
         <div class="btn-group">
             <button class="btn btn-period" onclick="runReport('daily')">TODAY</button>
             <button class="btn btn-period" onclick="runReport('weekly')">WEEKLY</button>
             <button class="btn btn-period" onclick="runReport('monthly')">MONTHLY</button>
         </div>
         
-        <textarea id="reportOutput" rows="8" readonly placeholder="Report preview..."></textarea>
+        <textarea id="reportOutput" rows="8" readonly placeholder="Select a period above to view your report..."></textarea>
         
-        <div style="display: flex; gap: 8px; margin-top: 10px;">
-            <button class="btn btn-wa" style="flex: 1;" onclick="copyWhatsApp()">📲 WHATSAPP</button>
-            <button class="btn btn-pdf" style="flex: 1;" onclick="downloadPDF()">📄 DOWNLOAD PDF</button>
+        <div class="action-btns">
+            <button class="btn btn-wa" onclick="copyWhatsApp()">📲 Share via WhatsApp</button>
+            <button class="btn btn-pdf" onclick="downloadPDF()">📄 Export PDF</button>
         </div>
-        <button class="btn" style="background:#eee; color:#666; font-size: 10px; margin-top:10px;" onclick="clearHistory()">Reset All Data</button>
+        
+        <div style="text-align: center;">
+            <button class="btn btn-reset" onclick="clearHistory()">Reset All Data</button>
+        </div>
     </div>
 </div>
 
@@ -138,7 +384,7 @@
         const type = document.getElementById('type').value;
         const desc = document.getElementById('desc').value || "General entry";
         
-        if(amt <= 0) return alert("Please enter amount");
+        if(amt <= 0) return alert("Please enter a valid amount.");
 
         db.push({
             date: new Date().toISOString(),
@@ -149,9 +395,23 @@
         });
 
         localStorage.setItem('sisonke_v3_db', JSON.stringify(db));
-        alert("Saved successfully!");
+        
+        // Visual feedback
+        const btn = document.querySelector('.btn-save');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = "✓ Saved";
+        btn.style.background = "rgba(46, 204, 113, 0.8)";
+        btn.style.borderColor = "#2ecc71";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.style.background = "rgba(255, 255, 255, 0.25)";
+            btn.style.borderColor = "rgba(255,255,255,0.5)";
+        }, 2000);
+
         document.getElementById('amount').value = "";
         document.getElementById('desc').value = "";
+        calculateSplits();
     }
 
     function runReport(period) {
@@ -168,7 +428,7 @@
             if(period === 'monthly') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
         });
 
-        let s = `--- ${currentReportTitle} ---\n\n`;
+        let s = `✦ ${currentReportTitle} ✦\n\n`;
         let streams = { "Perfumes": 0, "Tutoring": 0, "CV Services": 0 };
         let totalIn = 0; let totalOut = 0;
 
@@ -182,25 +442,30 @@
             }
         });
 
+        s += `[ REVENUE BY STREAM ]\n`;
         for(let key in streams) {
             s += `${key}: ${format(streams[key])}\n`;
         }
 
-        s += `\n*ALLOCATION BREAKDOWN (GROSS IN)*\n`;
-        s += `🙏 Tithe: ${format(totalIn * 0.1)}\n📢 Ads: ${format(totalIn * 0.3)}\n📦 Stock: ${format(totalIn * 0.1)}\n⚙️ Ops/Grow: ${format(totalIn * 0.5)}\n\n`;
+        s += `\n[ ALLOCATIONS (GROSS IN) ]\n`;
+        s += `Tithe: ${format(totalIn * 0.1)}\nAds & Mkt: ${format(totalIn * 0.3)}\nStock: ${format(totalIn * 0.1)}\nOps/Grow: ${format(totalIn * 0.5)}\n\n`;
+        s += `------------------------\n`;
         s += `TOTAL PROFIT: ${format(totalIn - totalOut)}`;
         
         document.getElementById('reportOutput').value = s;
     }
 
     function downloadPDF() {
-        if(currentFilteredData.length === 0) return alert("Generate a report first");
+        if(currentFilteredData.length === 0) return alert("Please generate a report first.");
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        doc.setFontSize(20); doc.setTextColor(26, 115, 232);
-        doc.text("Sisonke Master Report", 14, 20);
-        doc.setFontSize(10); doc.setTextColor(100);
+        doc.setFontSize(22); 
+        doc.setTextColor(26, 115, 232);
+        doc.text("Sisonke Edutech Master Report", 14, 20);
+        
+        doc.setFontSize(11); 
+        doc.setTextColor(100);
         doc.text(currentReportTitle, 14, 28);
 
         const tableBody = currentFilteredData.map(i => [
@@ -215,28 +480,31 @@
             startY: 35,
             head: [['Date', 'Stream', 'Type', 'Description', 'Amount']],
             body: tableBody,
-            headStyles: { fillColor: [26, 115, 232] }
+            headStyles: { fillColor: [26, 115, 232], textColor: [255,255,255] },
+            alternateRowStyles: { fillColor: [240, 245, 255] },
+            styles: { font: 'helvetica', fontSize: 10 }
         });
 
-        // Add Summary box at bottom
-        const finalY = doc.lastAutoTable.finalY + 10;
-        doc.text("Report Summary available in text dashboard.", 14, finalY);
+        const finalY = doc.lastAutoTable.finalY + 15;
+        doc.setFontSize(10);
+        doc.text("Report Summary available in your web dashboard.", 14, finalY);
 
         doc.save(`Sisonke_${currentReportTitle.replace(/ /g,"_")}.pdf`);
     }
 
     function copyWhatsApp() {
         const t = document.getElementById('reportOutput').value;
-        if(!t) return alert("Generate report first");
+        if(!t) return alert("Please generate a report first.");
         navigator.clipboard.writeText(t);
-        alert("Copied to clipboard!");
+        alert("Report copied to clipboard! Ready to paste in WhatsApp.");
     }
 
     function clearHistory() {
-        if(confirm("Delete all data?")) {
+        if(confirm("Are you sure you want to permanently delete all data?")) {
             localStorage.removeItem('sisonke_v3_db');
             db = [];
             document.getElementById('reportOutput').value = "";
+            alert("Data reset.");
         }
     }
 </script>
